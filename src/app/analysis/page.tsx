@@ -127,8 +127,9 @@ export default function Analysis() {
     const prepareDistributionChartData = () => {
         if (!analysisData) return null;
 
-        // Create bins for decimal marks (0, 0.5, 1, 1.5, ..., 30)
-        const allMarks = Array.from({ length: 61 }, (_, i) => i * 0.5);
+        // Create bins with more reasonable increments (0, 1, 2, ..., 30)
+        // This reduces the number of ticks and improves readability
+        const allMarks = Array.from({ length: 31 }, (_, i) => i);
 
         // Create datasets for each subject
         const datasets = Object.keys(subjectColors).map(subject => {
@@ -139,11 +140,12 @@ export default function Analysis() {
 
             // Create an array of counts for each mark bin
             const counts = allMarks.map(mark => {
-                // For each bin, find exact match or closest mark
-                const found = subjectData.find(item => 
-                    Math.abs(item.marks - mark) < 0.01 // Allow tiny difference for floating-point comparison
+                // For each bin, find all marks that fall within 0.5 of this mark
+                // e.g., bin 7 contains marks from 6.5 to 7.49
+                const marksInBin = subjectData.filter(item =>
+                    item.marks >= mark - 0.5 && item.marks < mark + 0.5
                 );
-                return found ? found.count : 0;
+                return marksInBin.reduce((sum, item) => sum + item.count, 0);
             });
 
             return {
@@ -152,13 +154,13 @@ export default function Analysis() {
                 borderColor: borderColors[subject as keyof typeof borderColors],
                 backgroundColor: subjectColors[subject as keyof typeof subjectColors],
                 borderWidth: 2,
-                tension: 0.2,
-                pointRadius: 3,
+                tension: 0.3,
+                pointRadius: 4,
             };
         });
 
         return {
-            labels: allMarks.map(mark => mark.toFixed(1)), // Format labels as "0.0", "0.5", etc.
+            labels: allMarks.map(mark => mark.toString()),
             datasets,
         };
     };
@@ -283,7 +285,7 @@ export default function Analysis() {
                     },
                     color: 'rgba(255, 255, 255, 0.7)',
                     // Ensure student count is always displayed as integers
-                    callback: function(value: any) {
+                    callback: function (value: any) {
                         if (Math.floor(value) === value) {
                             return value;
                         }
@@ -308,12 +310,10 @@ export default function Analysis() {
                         family: 'JetBrains Mono',
                     },
                     color: 'rgba(255, 255, 255, 0.7)',
-                    maxRotation: 90,
-                    minRotation: 45,
-                    // Only show every fifth mark to prevent overcrowding
-                    callback: function(value: any, index: number) {
-                        return index % 5 === 0 ? value : '';
-                    }
+                    maxRotation: 45,
+                    minRotation: 0,
+                    autoSkip: true,
+                    maxTicksLimit: 15,  // Limit the number of ticks to improve readability
                 },
             },
         },
