@@ -65,6 +65,25 @@ export default function Analysis() {
         await signOut({ callbackUrl: "/" });
     };
 
+    // Refresh data handler
+    const handleRefresh = async () => {
+        setIsLoading(true);
+        setError('');
+        try {
+            const response = await fetch('/api/analysis');
+            if (!response.ok) {
+                throw new Error('Failed to fetch analysis data');
+            }
+            const data = await response.json();
+            setAnalysisData(data);
+        } catch (err) {
+            console.error('Error refreshing analysis data:', err);
+            setError('ERROR: FAILED_TO_REFRESH_DATA');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Colors for subjects - Updated History to orange
     const subjectColors = {
         'Political Science': 'rgba(191, 255, 0, 0.8)', // lime
@@ -100,6 +119,46 @@ export default function Analysis() {
 
         fetchData();
     }, []);
+
+    // Calculate average marks per subject
+    const calculateAverageMarksPerSubject = () => {
+        if (!analysisData) return {};
+
+        const subjectTotals: Record<string, { total: number; count: number }> = {};
+
+        // Calculate totals and counts for each subject
+        analysisData.averageMarksByTA.forEach(item => {
+            if (!subjectTotals[item.subject]) {
+                subjectTotals[item.subject] = { total: 0, count: 0 };
+            }
+            subjectTotals[item.subject].total += item.averageMarks * item.count;
+            subjectTotals[item.subject].count += item.count;
+        });
+
+        // Calculate averages
+        const averages: Record<string, number> = {};
+        for (const subject in subjectTotals) {
+            averages[subject] = parseFloat((subjectTotals[subject].total / subjectTotals[subject].count).toFixed(2));
+        }
+
+        return averages;
+    };
+
+    // Get total student count per subject
+    const getStudentCountPerSubject = () => {
+        if (!analysisData) return {};
+
+        const counts: Record<string, number> = {};
+
+        analysisData.averageMarksByTA.forEach(item => {
+            if (!counts[item.subject]) {
+                counts[item.subject] = 0;
+            }
+            counts[item.subject] += item.count;
+        });
+
+        return counts;
+    };
 
     // Prepare data for TA Performance chart (bar chart)
     const prepareTAChartData = (subject: string) => {
@@ -338,6 +397,11 @@ export default function Analysis() {
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
                     <div>
+                        <AnimatedButton color="lime" onClick={handleRefresh}>
+                            REFRESH_DATA()
+                        </AnimatedButton>
+                    </div>
+                    <div>
                         <AnimatedButton color="orange" onClick={() => router.push('/dashboard')}>
                             DASHBOARD()
                         </AnimatedButton>
@@ -358,7 +422,7 @@ export default function Analysis() {
             </header>
 
             <div className="mb-8 panel p-4 mx-auto w-full max-w-6xl relative overflow-x-hidden">
-                <h2 className="text-xl font-bold mb-6 font-mono text-blue">DATA_VISUALIZATION</h2>
+                <h2 className="text-xl font-bold mb-12 font-mono text-blue">DATA_VISUALIZATION</h2>
 
                 {isLoading && (
                     <div className="h-64 flex items-center justify-center">
@@ -374,6 +438,34 @@ export default function Analysis() {
 
                 {!isLoading && !error && analysisData && (
                     <div className="space-y-12">
+                        {/* Summary Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-16 mx-auto w-full">
+                            {Object.entries(calculateAverageMarksPerSubject()).map(([subject, averageMarks]) => {
+                                const colorClass = subject === 'Political Science'
+                                    ? 'panel-highlight text-lime'
+                                    : subject === 'History'
+                                        ? 'panel-tertiary text-orange'
+                                        : 'panel-secondary text-blue';
+                                return (
+                                    <div key={subject} className={`panel ${colorClass} p-4 md:p-6 relative`}>
+                                        <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// {subject.toUpperCase()}_SUMMARY</div>
+                                        <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono">{subject.replace(' ', '_')}</h3>
+                                        <div className="flex flex-col space-y-2">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-mono text-gray-300">AVG_MARKS:</span>
+                                                <span className="text-2xl font-bold font-mono">{averageMarks}</span>
+                                            </div>
+                                            <div className="h-px w-full bg-gray-medium my-2"></div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-mono text-gray-300">STUDENTS:</span>
+                                                <span className="text-xl font-bold font-mono">{getStudentCountPerSubject()[subject]}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
                         {/* Marks Distribution Line Chart */}
                         <div className="panel panel-highlight p-6">
                             <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// MARKS_DISTRIBUTION</div>
