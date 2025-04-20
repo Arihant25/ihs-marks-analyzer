@@ -9,7 +9,7 @@ interface CasLoginProps {
   color?: "lime" | "blue" | "orange";
 }
 
-export default function CasLogin({ color = "lime" }: CasLoginProps) {
+export default function CasLogin({ color = "orange" }: CasLoginProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();

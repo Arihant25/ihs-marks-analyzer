@@ -59,16 +59,16 @@ export default function SubjectBox({
   };
 
   return (
-    <div className={`panel p-6 w-full relative ${getPanelStyle()}`}>
-      <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">
+    <div className={`panel my-3 p-4 md:p-6 w-full relative ${getPanelStyle()}`}>
+      <div className="absolute -top-6 left-4 text-xs font-mono text-gray-500">
         // {title.toUpperCase().replace(" ", "_")}_MODULE
       </div>
 
-      <h2 className={`text-xl font-bold mb-6 font-mono uppercase ${textColor}`}>
+      <h2 className={`text-lg md:text-xl font-bold mb-4 md:mb-6 font-mono uppercase ${textColor}`}>
         {title.replace(" ", "_")}
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
         <div>
           <label
             htmlFor={`ta-${title}`}
@@ -80,7 +80,7 @@ export default function SubjectBox({
             id={`ta-${title}`}
             value={taName}
             onChange={(e) => setTaName(e.target.value)}
-            className="input-field w-full appearance-none"
+            className="input-field w-full appearance-none text-sm md:text-base"
           >
             {taOptions.map((name) => (
               <option key={name} value={name} className="bg-black">
@@ -104,7 +104,7 @@ export default function SubjectBox({
             max="30"
             value={marks}
             onChange={(e) => setMarks(parseInt(e.target.value))}
-            className="input-field w-full"
+            className="input-field w-full text-sm md:text-base"
           />
         </div>
 

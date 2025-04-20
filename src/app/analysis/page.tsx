@@ -2,7 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import AnimatedButton from '@/components/AnimatedButton';
+import RotateDevicePrompt from '@/components/RotateDevicePrompt';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -54,9 +56,14 @@ export default function Analysis() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setPageLoading(false);
-        }, 1000);
+        }, 0);
         return () => clearTimeout(timer);
     }, []);
+
+    // Logout handler
+    const handleLogout = async () => {
+        await signOut({ callbackUrl: "/" });
+    };
 
     // Colors for subjects - Updated History to orange
     const subjectColors = {
@@ -305,21 +312,36 @@ export default function Analysis() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col p-8">
-            <header className="mb-16 flex justify-between items-center">
-                <div className="flex items-center">
-                    <h1 className="text-3xl font-bold font-mono text-lime">IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span></h1>
-                    <div className="ml-8">
-                        <AnimatedButton color="blue" onClick={() => router.push('/dashboard')}>
+        <div className="min-h-screen flex flex-col p-4 md:p-8">
+            {/* Rotation Prompt for Mobile Devices */}
+            <RotateDevicePrompt />
+
+            <header className="mb-8 md:mb-16 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-bold font-mono text-lime">IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span></h1>
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <div>
+                        <AnimatedButton color="orange" onClick={() => router.push('/dashboard')}>
                             DASHBOARD()
                         </AnimatedButton>
                     </div>
+                    <div>
+                        <AnimatedButton onClick={handleLogout} color="blue" className="text-xs">
+                            LOGOUT()
+                        </AnimatedButton>
+                    </div>
+                    <div className="text-xs text-gray-500 font-mono">
+                        {new Date().toLocaleDateString('en-IN', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        }).replace(/\//g, '/')}
+                    </div>
                 </div>
-                <div className="text-xs text-gray-500 font-mono">{new Date().toISOString().split('T')[0].replace(/-/g, '/')}</div>
             </header>
 
-            <div className="mb-8 panel p-4 mx-auto w-full max-w-6xl relative">
-                <div className="absolute -top-2 right-4 text-xs text-blue font-mono">// MARKS_ANALYSIS</div>
+            <div className="mb-8 panel p-4 mx-auto w-full max-w-6xl relative overflow-x-hidden">
                 <h2 className="text-xl font-bold mb-6 font-mono text-blue">DATA_VISUALIZATION</h2>
 
                 {isLoading && (
@@ -346,10 +368,10 @@ export default function Analysis() {
                         </div>
 
                         {/* TA Performance Bar Charts */}
-                        <div className="grid-asymmetric mb-16 mx-auto w-full">
-                            <div className="panel panel-highlight p-6 relative">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-16 mx-auto w-full">
+                            <div className="panel panel-highlight p-4 md:p-6 relative">
                                 <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// POLITICAL_SCIENCE_TA_PERFORMANCE</div>
-                                <h3 className="text-lg font-bold mb-6 font-mono text-lime">POLITICAL_SCIENCE_TAs</h3>
+                                <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-lime">POLITICAL_SCIENCE_TAs</h3>
                                 <div className="h-64">
                                     <Bar
                                         data={prepareTAChartData('Political Science') || { labels: [], datasets: [] }}
@@ -357,9 +379,9 @@ export default function Analysis() {
                                     />
                                 </div>
                             </div>
-                            <div className="panel panel-tertiary p-6 relative">
+                            <div className="panel panel-tertiary p-4 md:p-6 relative">
                                 <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// HISTORY_TA_PERFORMANCE</div>
-                                <h3 className="text-lg font-bold mb-6 font-mono text-orange">HISTORY_TAs</h3>
+                                <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-orange">HISTORY_TAs</h3>
                                 <div className="h-64">
                                     <Bar
                                         data={prepareTAChartData('History') || { labels: [], datasets: [] }}
@@ -367,9 +389,9 @@ export default function Analysis() {
                                     />
                                 </div>
                             </div>
-                            <div className="panel panel-secondary p-6 relative">
+                            <div className="panel panel-secondary p-4 md:p-6 relative">
                                 <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// ECONOMICS_TA_PERFORMANCE</div>
-                                <h3 className="text-lg font-bold mb-6 font-mono text-blue">ECONOMICS_TAs</h3>
+                                <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-blue">ECONOMICS_TAs</h3>
                                 <div className="h-64">
                                     <Bar
                                         data={prepareTAChartData('Economics') || { labels: [], datasets: [] }}
@@ -380,11 +402,11 @@ export default function Analysis() {
                         </div>
 
                         {/* Individual TA Performance Across Subjects */}
-                        <div className="panel panel-highlight p-6 relative mb-16">
+                        <div className="panel panel-highlight p-4 md:p-6 relative mb-8 md:mb-16">
                             <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// TA_SUBJECT_PERFORMANCE</div>
-                            <h3 className="text-lg font-bold mb-6 font-mono text-lime">TA_PERFORMANCE_ACROSS_SUBJECTS</h3>
+                            <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-lime">TA_PERFORMANCE_ACROSS_SUBJECTS</h3>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
                                 {getUniqueTAs().map((taName, index) => (
                                     <div key={index} className="panel p-4 relative">
                                         <div className="absolute -top-3 left-4 text-xs font-mono text-gray-500">// {taName.toUpperCase()}</div>

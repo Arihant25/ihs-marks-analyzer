@@ -7,7 +7,8 @@
   --black: #000000;
   --lime: #bfff00;
   --blue: #00e0ff;
-  --orange: #ff7a00; /* New neon orange color for History */
+  --orange: #ff7a00;
+  /* New neon orange color for History */
   --gray-dark: #1a1a1a;
   --gray-medium: #333333;
   --gray-light: #555555;
@@ -168,6 +169,47 @@ h6 {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Custom rotation animations for the device rotation prompt */
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+
+  .animate-rotate {
+    animation: rotate 2s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    25% {
+      transform: rotate(90deg);
+    }
+
+    50% {
+      transform: rotate(0deg);
+    }
+
+    75% {
+      transform: rotate(-90deg);
+    }
+
+    100% {
+      transform: rotate(0deg);
+    }
   }
 
   .panel {
@@ -424,7 +466,8 @@ h6 {
 
   .grid-asymmetric {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Changed from 2fr 1fr 1fr to equal widths */
+    grid-template-columns: 1fr 1fr 1fr;
+    /* Changed from 2fr 1fr 1fr to equal widths */
     gap: var(--spacing-md);
   }
 
