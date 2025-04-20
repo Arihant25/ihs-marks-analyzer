@@ -7,6 +7,7 @@
   --black: #000000;
   --lime: #BFFF00;
   --blue: #00E0FF;
+  --orange: #FF7A00; /* New neon orange color for History */
   --gray-dark: #1A1A1A;
   --gray-medium: #333333;
   --gray-light: #555555;
@@ -24,6 +25,26 @@
   --color-foreground: #FFFFFF;
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Disable user select and tap highlight for everything */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* But enable for specific input elements */
+input, textarea {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 body {
@@ -58,6 +79,91 @@ h6 {
   letter-spacing: -0.02em;
 }
 
+/* Custom loader */
+.loader {
+  position: relative;
+  font-size: 16px;
+  width: 5.5em;
+  height: 5.5em;
+}
+
+.loader:before {
+  content: '';
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(45deg);
+  height: 100%;
+  width: 4px;
+  background: #fff;
+  left: 50%;
+  top: 50%;
+}
+
+.loader:after {
+  content: '';
+  position: absolute;
+  left: 0.2em;
+  bottom: 0.18em;
+  width: 1em;
+  height: 1em;
+  background-color: var(--lime);
+  border-radius: 15%;
+  animation: rollingRock 2.5s cubic-bezier(.79, 0, .47, .97) infinite;
+}
+
+.loader-orange:after {
+  background-color: var(--orange);
+}
+
+.loader-blue:after {
+  background-color: var(--blue);
+}
+
+@keyframes rollingRock {
+  0% {
+    transform: translate(0, -1em) rotate(-45deg)
+  }
+
+  5% {
+    transform: translate(0, -1em) rotate(-50deg)
+  }
+
+  20% {
+    transform: translate(1em, -2em) rotate(47deg)
+  }
+
+  25% {
+    transform: translate(1em, -2em) rotate(45deg)
+  }
+
+  30% {
+    transform: translate(1em, -2em) rotate(40deg)
+  }
+
+  45% {
+    transform: translate(2em, -3em) rotate(137deg)
+  }
+
+  50% {
+    transform: translate(2em, -3em) rotate(135deg)
+  }
+
+  55% {
+    transform: translate(2em, -3em) rotate(130deg)
+  }
+
+  70% {
+    transform: translate(3em, -4em) rotate(217deg)
+  }
+
+  75% {
+    transform: translate(3em, -4em) rotate(220deg)
+  }
+
+  100% {
+    transform: translate(0, -1em) rotate(-225deg)
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -77,12 +183,20 @@ h6 {
     border-color: var(--blue);
   }
 
+  .panel-tertiary {
+    border-color: var(--orange);
+  }
+
   .text-lime {
     color: var(--lime);
   }
 
   .text-blue {
     color: var(--blue);
+  }
+
+  .text-orange {
+    color: var(--orange);
   }
 
   .bg-lime {
@@ -93,12 +207,178 @@ h6 {
     background-color: var(--blue);
   }
 
+  .bg-orange {
+    background-color: var(--orange);
+  }
+
   .border-lime {
     border-color: var(--lime);
   }
 
   .border-blue {
     border-color: var(--blue);
+  }
+
+  .border-orange {
+    border-color: var(--orange);
+  }
+
+  /* Animated Button Styles */
+  .animated-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 28px;
+    border: 3px solid;
+    border-color: transparent;
+    font-size: 16px;
+    font-family: var(--font-mono);
+    background-color: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .animated-button svg {
+    position: absolute;
+    width: 24px;
+    z-index: 9;
+    transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .animated-button .arr-1 {
+    right: 16px;
+  }
+  
+  .animated-button .arr-2 {
+    left: -25%;
+  }
+  
+  .animated-button .circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .animated-button .text {
+    position: relative;
+    z-index: 1;
+    transform: translateX(-12px);
+    transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .animated-button:hover {
+    box-shadow: 0 0 0 12px transparent;
+    border-radius: 5px;
+  }
+  
+  .animated-button:hover .arr-1 {
+    right: -25%;
+  }
+  
+  .animated-button:hover .arr-2 {
+    left: 16px;
+  }
+  
+  .animated-button:hover .text {
+    transform: translateX(12px);
+  }
+  
+  .animated-button:active {
+    scale: 0.95;
+  }
+  
+  .animated-button:hover .circle {
+    width: 220px;
+    height: 220px;
+    opacity: 1;
+  }
+
+  /* Colors for animated button - Lime */
+  .animated-button-lime {
+    color: var(--lime);
+    box-shadow: 0 0 0 2px var(--lime);
+  }
+
+  .animated-button-lime svg {
+    fill: var(--lime);
+  }
+
+  .animated-button-lime .circle {
+    background-color: var(--lime);
+  }
+
+  .animated-button-lime:hover {
+    color: var(--black);
+  }
+
+  .animated-button-lime:hover svg {
+    fill: var(--black);
+  }
+
+  .animated-button-lime:active {
+    box-shadow: 0 0 0 4px var(--lime);
+  }
+
+  /* Colors for animated button - Blue */
+  .animated-button-blue {
+    color: var(--blue);
+    box-shadow: 0 0 0 2px var(--blue);
+  }
+
+  .animated-button-blue svg {
+    fill: var(--blue);
+  }
+
+  .animated-button-blue .circle {
+    background-color: var(--blue);
+  }
+
+  .animated-button-blue:hover {
+    color: var(--black);
+  }
+
+  .animated-button-blue:hover svg {
+    fill: var(--black);
+  }
+
+  .animated-button-blue:active {
+    box-shadow: 0 0 0 4px var(--blue);
+  }
+
+  /* Colors for animated button - Orange */
+  .animated-button-orange {
+    color: var(--orange);
+    box-shadow: 0 0 0 2px var(--orange);
+  }
+
+  .animated-button-orange svg {
+    fill: var(--orange);
+  }
+
+  .animated-button-orange .circle {
+    background-color: var(--orange);
+  }
+
+  .animated-button-orange:hover {
+    color: var(--black);
+  }
+
+  .animated-button-orange:hover svg {
+    fill: var(--black);
+  }
+
+  .animated-button-orange:active {
+    box-shadow: 0 0 0 4px var(--orange);
   }
 
   .btn {
@@ -131,9 +411,19 @@ h6 {
     color: var(--black);
   }
 
+  .btn-orange {
+    border-color: var(--orange);
+    color: var(--orange);
+  }
+
+  .btn-orange:hover {
+    background-color: var(--orange);
+    color: var(--black);
+  }
+
   .grid-asymmetric {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr; /* Changed from 2fr 1fr 1fr to equal widths */
     gap: var(--spacing-md);
   }
 
@@ -154,5 +444,19 @@ h6 {
   .input-field:focus {
     border-color: var(--lime);
     outline: none;
+  }
+
+  /* Full screen loading */
+  .loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
   }
 }

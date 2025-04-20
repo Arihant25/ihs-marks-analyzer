@@ -1,11 +1,12 @@
 'use client';
 
 import React from 'react';
+import AnimatedButton from './AnimatedButton';
 
 type SubjectBoxProps = {
     title: string;
     onSubmit: (data: { taName: string; marks: number }) => void;
-    color?: 'lime' | 'blue';
+    color?: 'lime' | 'blue' | 'orange';
 };
 
 const taOptions = ['Tanveer', 'Sreenivas', 'Medha', 'Sathvika', 'Anushka', 'Tanish', 'Kriti', 'Gargie', 'Rohan', 'Aadi', 'Asirith', 'Chetan', 'Rushil', 'Akshit', 'Chandana'];
@@ -15,9 +16,18 @@ export default function SubjectBox({ title, onSubmit, color }: SubjectBoxProps) 
     const [marks, setMarks] = React.useState<number>(0);
 
     const accentColor = color || 'white';
-    const borderColor = `border-${accentColor}`;
     const textColor = `text-${accentColor}`;
-    const btnClass = color ? `btn-${color}` : 'btn-blue';
+
+    // Determine panel style based on color
+    const getPanelStyle = () => {
+        if (!color) return '';
+        switch (color) {
+            case 'lime': return 'panel-highlight';
+            case 'blue': return 'panel-secondary';
+            case 'orange': return 'panel-tertiary';
+            default: return '';
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,10 +35,10 @@ export default function SubjectBox({ title, onSubmit, color }: SubjectBoxProps) 
     };
 
     return (
-        <div className={`panel p-6 w-full relative ${color ? `panel-${color === 'lime' ? 'highlight' : 'secondary'}` : ''}`}>
+        <div className={`panel p-6 w-full relative ${getPanelStyle()}`}>
             <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// {title.toUpperCase().replace(' ', '_')}_MODULE</div>
 
-            <h2 className={`text-xl font-bold mb-6 font-mono uppercase ${accentColor === 'lime' ? 'text-lime' : accentColor === 'blue' ? 'text-blue' : 'text-white'}`}>
+            <h2 className={`text-xl font-bold mb-6 font-mono uppercase ${textColor}`}>
                 {title.replace(' ', '_')}
             </h2>
 
@@ -66,12 +76,13 @@ export default function SubjectBox({ title, onSubmit, color }: SubjectBoxProps) 
                     />
                 </div>
 
-                <button
+                <AnimatedButton
                     type="submit"
-                    className={`btn ${btnClass} w-full`}
+                    color={color}
+                    fullWidth
                 >
                     SUBMIT()
-                </button>
+                </AnimatedButton>
             </form>
         </div>
     );

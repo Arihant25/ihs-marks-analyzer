@@ -1,19 +1,41 @@
 'use client';
 
 import React from 'react';
+import { useSession, signOut } from 'next-auth/react';
 import SubjectBox from '@/components/SubjectBox';
+import AnimatedButton from '@/components/AnimatedButton';
 import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
     const router = useRouter();
-    const [rollNumber, setRollNumber] = React.useState('');
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {
+            router.push('/');
+        },
+    });
+
     const [notification, setNotification] = React.useState({ message: '', type: '' });
     const [isLoading, setIsLoading] = React.useState(false);
+    const [pageLoading, setPageLoading] = React.useState(true);
+
+    // Simulate initial page loading
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setPageLoading(false);
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const handleLogout = async () => {
+        await signOut({ callbackUrl: '/' });
+    };
 
     const handleSubjectSubmit = async (subject: string, data: { taName: string; marks: number }) => {
-        if (!rollNumber.trim()) {
+        // Use the roll number from the session
+        if (!session?.user?.rollNumber) {
             setNotification({
-                message: 'ERROR: ROLL_NUMBER_REQUIRED',
+                message: 'ERROR: USER_SESSION_INVALID',
                 type: 'error'
             });
             return;
@@ -27,7 +49,7 @@ export default function Dashboard() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    rollNumber,
+                    rollNumber: session.user.rollNumber,
                     subject,
                     taName: data.taName,
                     marks: data.marks,
@@ -62,26 +84,38 @@ export default function Dashboard() {
         }
     };
 
+    if (status === "loading" || pageLoading) {
+        return (
+            <div className="loading-screen">
+                <div className="loader"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen flex flex-col p-8">
             <header className="mb-16 flex justify-between items-center">
                 <h1 className="text-3xl font-bold font-mono text-lime">IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span></h1>
-                <div className="text-xs text-gray-500 font-mono">{new Date().toISOString().split('T')[0].replace(/-/g, '/')}</div>
+                <div className="flex items-center gap-4">
+                    <div className="text-xs text-gray-500 font-mono">{new Date().toISOString().split('T')[0].replace(/-/g, '/')}</div>
+                    <AnimatedButton onClick={handleLogout} color="blue" className="text-xs">
+                        LOGOUT()
+                    </AnimatedButton>
+                </div>
             </header>
 
             <div className="mb-8 panel p-4 mx-auto w-full max-w-md relative">
                 <div className="absolute -top-2 right-4 text-xs text-blue font-mono">// USER_IDENTIFICATION</div>
-                <label htmlFor="rollNumber" className="block text-sm font-mono text-gray-300 mb-2">
-                    ROLL_NUMBER:
-                </label>
-                <input
-                    id="rollNumber"
-                    type="text"
-                    value={rollNumber}
-                    onChange={(e) => setRollNumber(e.target.value)}
-                    placeholder="ENTER_ROLL_NUMBER"
-                    className="input-field w-full"
-                />
+                <div className="flex justify-between items-center">
+                    <div>
+                        <div className="text-sm text-gray-300 font-mono mb-1">WELCOME:</div>
+                        <div className="font-bold text-lime">{session.user?.name || "USER"}</div>
+                    </div>
+                    <div>
+                        <div className="text-sm text-gray-300 font-mono mb-1">ROLL_NUMBER:</div>
+                        <div className="font-bold text-blue">{session.user?.rollNumber || "UNKNOWN"}</div>
+                    </div>
+                </div>
             </div>
 
             {notification.message && (
@@ -102,6 +136,7 @@ export default function Dashboard() {
                 <SubjectBox
                     title="History"
                     onSubmit={(data) => handleSubjectSubmit('History', data)}
+                    color="orange"
                 />
                 <SubjectBox
                     title="Economics"
@@ -111,13 +146,8 @@ export default function Dashboard() {
             </div>
 
             {isLoading && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-                    <div className="h-16 w-16 relative">
-                        <div className="h-full w-full border-2 border-lime border-t-transparent animate-spin rounded-full"></div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-xs font-mono text-lime">LOAD</span>
-                        </div>
-                    </div>
+                <div className="loading-screen">
+                    <div className="loader"></div>
                 </div>
             )}
 
