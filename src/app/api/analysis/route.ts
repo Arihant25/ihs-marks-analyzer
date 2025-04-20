@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
         ]);
 
         // Aggregate data for marks distribution across all subjects
+        // We're keeping the exact marks value to properly support decimal marks
         const marksDistribution = await Marks.aggregate([
             {
                 $group: {
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
 
         const formattedDistribution = marksDistribution.map(item => ({
             subject: item._id.subject,
-            marks: item._id.marks,
+            marks: parseFloat(item._id.marks.toFixed(2)), // Format to 2 decimal places
             count: item.count
         }));
 

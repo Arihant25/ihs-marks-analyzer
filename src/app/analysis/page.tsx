@@ -127,8 +127,8 @@ export default function Analysis() {
     const prepareDistributionChartData = () => {
         if (!analysisData) return null;
 
-        // Get unique marks values across all subjects (0-30)
-        const allMarks = Array.from({ length: 31 }, (_, i) => i);
+        // Create bins for decimal marks (0, 0.5, 1, 1.5, ..., 30)
+        const allMarks = Array.from({ length: 61 }, (_, i) => i * 0.5);
 
         // Create datasets for each subject
         const datasets = Object.keys(subjectColors).map(subject => {
@@ -137,9 +137,12 @@ export default function Analysis() {
                 item => item.subject === subject
             );
 
-            // Create an array of counts for each mark (0-30)
+            // Create an array of counts for each mark bin
             const counts = allMarks.map(mark => {
-                const found = subjectData.find(item => item.marks === mark);
+                // For each bin, find exact match or closest mark
+                const found = subjectData.find(item => 
+                    Math.abs(item.marks - mark) < 0.01 // Allow tiny difference for floating-point comparison
+                );
                 return found ? found.count : 0;
             });
 
@@ -155,7 +158,7 @@ export default function Analysis() {
         });
 
         return {
-            labels: allMarks,
+            labels: allMarks.map(mark => mark.toFixed(1)), // Format labels as "0.0", "0.5", etc.
             datasets,
         };
     };
@@ -279,6 +282,13 @@ export default function Analysis() {
                         family: 'JetBrains Mono',
                     },
                     color: 'rgba(255, 255, 255, 0.7)',
+                    // Ensure student count is always displayed as integers
+                    callback: function(value: any) {
+                        if (Math.floor(value) === value) {
+                            return value;
+                        }
+                        return '';
+                    }
                 },
             },
             x: {
@@ -298,6 +308,12 @@ export default function Analysis() {
                         family: 'JetBrains Mono',
                     },
                     color: 'rgba(255, 255, 255, 0.7)',
+                    maxRotation: 90,
+                    minRotation: 45,
+                    // Only show every fifth mark to prevent overcrowding
+                    callback: function(value: any, index: number) {
+                        return index % 5 === 0 ? value : '';
+                    }
                 },
             },
         },

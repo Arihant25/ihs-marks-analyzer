@@ -38,6 +38,15 @@ export default function SubjectBox({
   const accentColor = color || "white";
   const textColor = `text-${accentColor}`;
 
+  // Handle marks input change with decimal support
+  const handleMarksChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    // Only set marks if it's a valid number
+    if (!isNaN(value)) {
+      setMarks(value);
+    }
+  };
+
   // Determine panel style based on color
   const getPanelStyle = () => {
     if (!color) return "";
@@ -102,8 +111,9 @@ export default function SubjectBox({
             type="number"
             min="0"
             max="30"
+            step="0.01"
             value={marks}
-            onChange={(e) => setMarks(parseInt(e.target.value))}
+            onChange={handleMarksChange}
             className="input-field w-full text-sm md:text-base"
           />
         </div>

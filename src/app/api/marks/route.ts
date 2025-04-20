@@ -20,17 +20,20 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if marks are within the valid range
-        if (marks < 0 || marks > 30) {
+        if (isNaN(marks) || marks < 0 || marks > 30) {
             return NextResponse.json(
-                { error: 'Marks must be between 0 and 30' },
+                { error: 'Marks must be a valid number between 0 and 30' },
                 { status: 400 }
             );
         }
 
+        // Round to 2 decimal places for consistency
+        const roundedMarks = parseFloat(marks.toFixed(2));
+
         // Create or update the marks entry
         const result = await Marks.findOneAndUpdate(
             { rollNumber, subject },
-            { rollNumber, subject, taName, marks },
+            { rollNumber, subject, taName, marks: roundedMarks },
             { upsert: true, new: true }
         );
 
