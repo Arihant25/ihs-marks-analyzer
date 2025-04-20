@@ -5,13 +5,19 @@ import React from 'react';
 type SubjectBoxProps = {
     title: string;
     onSubmit: (data: { taName: string; marks: number }) => void;
+    color?: 'lime' | 'blue';
 };
 
 const taOptions = ['Tanveer', 'Sreenivas', 'Medha', 'Sathvika', 'Anushka', 'Tanish', 'Kriti', 'Gargie', 'Rohan', 'Aadi', 'Asirith', 'Chetan', 'Rushil', 'Akshit', 'Chandana'];
 
-export default function SubjectBox({ title, onSubmit }: SubjectBoxProps) {
+export default function SubjectBox({ title, onSubmit, color }: SubjectBoxProps) {
     const [taName, setTaName] = React.useState(taOptions[0]);
     const [marks, setMarks] = React.useState<number>(0);
+
+    const accentColor = color || 'white';
+    const borderColor = `border-${accentColor}`;
+    const textColor = `text-${accentColor}`;
+    const btnClass = color ? `btn-${color}` : 'btn-blue';
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -19,24 +25,26 @@ export default function SubjectBox({ title, onSubmit }: SubjectBoxProps) {
     };
 
     return (
-        <div className="glassmorphism p-6 w-full">
-            <h2 className="text-2xl font-bold mb-4 text-center bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
-                {title}
+        <div className={`panel p-6 w-full relative ${color ? `panel-${color === 'lime' ? 'highlight' : 'secondary'}` : ''}`}>
+            <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// {title.toUpperCase().replace(' ', '_')}_MODULE</div>
+
+            <h2 className={`text-xl font-bold mb-6 font-mono uppercase ${accentColor === 'lime' ? 'text-lime' : accentColor === 'blue' ? 'text-blue' : 'text-white'}`}>
+                {title.replace(' ', '_')}
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label htmlFor={`ta-${title}`} className="block text-sm font-medium text-gray-300 mb-1">
-                        Teaching Assistant
+                    <label htmlFor={`ta-${title}`} className="block text-xs font-mono text-gray-300 mb-2 uppercase">
+                        Teaching_Assistant:
                     </label>
                     <select
                         id={`ta-${title}`}
                         value={taName}
                         onChange={(e) => setTaName(e.target.value)}
-                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="input-field w-full appearance-none"
                     >
                         {taOptions.map((name) => (
-                            <option key={name} value={name}>
+                            <option key={name} value={name} className="bg-black">
                                 {name}
                             </option>
                         ))}
@@ -44,8 +52,8 @@ export default function SubjectBox({ title, onSubmit }: SubjectBoxProps) {
                 </div>
 
                 <div>
-                    <label htmlFor={`marks-${title}`} className="block text-sm font-medium text-gray-300 mb-1">
-                        Marks (out of 30)
+                    <label htmlFor={`marks-${title}`} className="block text-xs font-mono text-gray-300 mb-2 uppercase">
+                        Marks_[0-30]:
                     </label>
                     <input
                         id={`marks-${title}`}
@@ -54,15 +62,15 @@ export default function SubjectBox({ title, onSubmit }: SubjectBoxProps) {
                         max="30"
                         value={marks}
                         onChange={(e) => setMarks(parseInt(e.target.value))}
-                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="input-field w-full"
                     />
                 </div>
 
                 <button
                     type="submit"
-                    className="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-md transition-all duration-200 transform hover:scale-105"
+                    className={`btn ${btnClass} w-full`}
                 >
-                    Save
+                    SUBMIT()
                 </button>
             </form>
         </div>

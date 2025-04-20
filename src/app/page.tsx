@@ -2,25 +2,43 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
-      <div className="glassmorphism p-8 max-w-xl w-full">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6 glow-effect bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
-          IHS Marks Analyzer
-        </h1>
+    <div className="flex flex-col min-h-screen p-8 relative">
+      <div className="absolute top-8 left-8 text-xs text-gray-500 font-mono">IHS_ANALYZER.v1.0</div>
 
-        <p className="text-lg mb-8 text-gray-300">
-          Track and analyze your academic performance across Political Science, History, and Economics
-        </p>
+      <main className="flex-grow flex flex-col items-center justify-center pt-16">
+        <div className="panel p-8 max-w-xl w-full mb-8 relative">
+          <div className="absolute -top-4 -left-4 w-8 h-8 border-t-2 border-l-2 border-lime"></div>
+          <div className="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-blue"></div>
 
-        <Link href="/dashboard">
-          <button className="px-8 py-3 text-lg font-medium rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition duration-300 transform hover:scale-105 neon-border">
-            Login with CAS
-          </button>
-        </Link>
-      </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-8 text-lime font-mono">
+            IHS_MARKS<span className="text-blue">_ANALYZER</span>
+          </h1>
 
-      <footer className="absolute bottom-4 text-gray-500 text-sm">
-        © {new Date().getFullYear()} IHS Marks Analyzer. All rights reserved.
+          <hr className="border-t-2 border-gray-medium mb-8" />
+
+          <p className="text-lg mb-8 font-sans tracking-wide">
+            Track and analyze your academic performance across
+            <span className="text-lime"> Political Science</span>,
+            <span className="text-white"> History</span>, and
+            <span className="text-blue"> Economics</span>
+          </p>
+
+          <Link href="/dashboard" className="block w-full">
+            <button className="btn btn-lime w-full">
+              LOGIN_WITH_CAS()
+            </button>
+          </Link>
+        </div>
+      </main>
+
+      <footer className="py-8 text-center">
+        <div className="flex justify-center items-center space-x-8">
+          <div className="h-px w-16 bg-gray-medium"></div>
+          <p className="text-gray-500 text-xs font-mono">
+            © {new Date().getFullYear()} // IHS_MARKS_ANALYZER
+          </p>
+          <div className="h-px w-16 bg-gray-medium"></div>
+        </div>
       </footer>
     </div>
   );

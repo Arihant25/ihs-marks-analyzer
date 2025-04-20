@@ -4,34 +4,58 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 10, 10, 30;
-  --primary-color: 66, 153, 225;
-  --secondary-color: 236, 72, 153;
-  --accent-color: 139, 92, 246;
+  --black: #000000;
+  --lime: #BFFF00;
+  --blue: #00E0FF;
+  --gray-dark: #1A1A1A;
+  --gray-medium: #333333;
+  --gray-light: #555555;
+  --noise-opacity: 0.03;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 64px;
+  --border-width: 2px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--black);
+  --color-foreground: #FFFFFF;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom,
-      rgb(var(--background-start-rgb)),
-      rgb(var(--background-end-rgb))) fixed;
-  font-family: Arial, Helvetica, sans-serif;
+  color: #FFFFFF;
+  background-color: var(--black);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcqRVCAAAAGnRSTlMAAwgJEBk3OUNEVVZXeImSnJ2ep6ipqqusrUQUgC8AAACMSURBVEjH7dfLDoMgEEBRRHyggopWff7/P9uFJhqRxcQ4yx5IbjiZAJH/KOYYaVdS+wqDDZvEaRdS+6oSrw3J/QpWE0z7CiS+gzQvYZWE0Z6wSi5hERMGoR5N+7pETXDtaxA2wbWXIGJNSO0ETNJxSemhw0rSOS0/JCJVZpOXhNvRRzwpR/I++cge/PoA3tYQHXdEQlQAAAAASUVORK5CYII=");
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+  z-index: 10;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 @layer utilities {
@@ -39,19 +63,96 @@ body {
     text-wrap: balance;
   }
 
-  .glassmorphism {
-    background: rgba(17, 25, 40, 0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.125);
-    border-radius: 0.75rem;
+  .panel {
+    background-color: rgba(26, 26, 26, 0.7);
+    backdrop-filter: blur(8px);
+    border: var(--border-width) solid var(--gray-medium);
   }
 
-  .glow-effect {
-    text-shadow: 0 0 10px rgba(var(--primary-color), 0.7);
+  .panel-highlight {
+    border-color: var(--lime);
   }
 
-  .neon-border {
-    box-shadow: 0 0 10px rgba(var(--accent-color), 0.5),
-      inset 0 0 10px rgba(var(--accent-color), 0.3);
+  .panel-secondary {
+    border-color: var(--blue);
+  }
+
+  .text-lime {
+    color: var(--lime);
+  }
+
+  .text-blue {
+    color: var(--blue);
+  }
+
+  .bg-lime {
+    background-color: var(--lime);
+  }
+
+  .bg-blue {
+    background-color: var(--blue);
+  }
+
+  .border-lime {
+    border-color: var(--lime);
+  }
+
+  .border-blue {
+    border-color: var(--blue);
+  }
+
+  .btn {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: var(--border-width) solid;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-lime {
+    border-color: var(--lime);
+    color: var(--lime);
+  }
+
+  .btn-lime:hover {
+    background-color: var(--lime);
+    color: var(--black);
+  }
+
+  .btn-blue {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .btn-blue:hover {
+    background-color: var(--blue);
+    color: var(--black);
+  }
+
+  .grid-asymmetric {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--spacing-md);
+  }
+
+  @media (max-width: 768px) {
+    .grid-asymmetric {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .input-field {
+    background-color: var(--black);
+    border: var(--border-width) solid var(--gray-medium);
+    padding: var(--spacing-sm);
+    color: white;
+    font-family: var(--font-mono);
+  }
+
+  .input-field:focus {
+    border-color: var(--lime);
+    outline: none;
   }
 }
