@@ -40,7 +40,7 @@ const MarksSchema = new Schema({
         required: true,
         min: 0,
         max: 30,
-        get: v => parseFloat(v.toFixed(2)), // Limit to 2 decimal places when retrieving
+        get: (v: number) => parseFloat(v.toFixed(2)), // Limit to 2 decimal places when retrieving
     },
     createdAt: {
         type: Date,
