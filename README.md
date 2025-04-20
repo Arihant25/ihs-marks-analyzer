@@ -8,7 +8,7 @@ We just ask one thing - honestly report your marks. We will not share your data 
 
 ## How to Use
 
-Go to [ihs-marks-analyzer.vercel.app](ihs-marks-analyzer.vercel.app) and fill in your marks. The program will then analyze the data and provide you with a detailed breakdown of the results.
+Go to [ihs-marks-analyzer.vercel.app](https://ihs-marks-analyzer.vercel.app) and fill in your marks. The program will then analyze the data and provide you with a detailed breakdown of the results.
 
 ## Tech Stack
 

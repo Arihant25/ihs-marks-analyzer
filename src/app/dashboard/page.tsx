@@ -3,6 +3,7 @@
 import React from 'react';
 import SubjectBox from '@/components/SubjectBox';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -65,7 +66,12 @@ export default function Dashboard() {
     return (
         <div className="min-h-screen flex flex-col p-8">
             <header className="mb-16 flex justify-between items-center">
-                <h1 className="text-3xl font-bold font-mono text-lime">IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span></h1>
+                <div className="flex items-center">
+                    <h1 className="text-3xl font-bold font-mono text-lime">IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span></h1>
+                    <Link href="/analysis" className="ml-8">
+                        <button className="btn btn-lime">VIEW_ANALYSIS()</button>
+                    </Link>
+                </div>
                 <div className="text-xs text-gray-500 font-mono">{new Date().toISOString().split('T')[0].replace(/-/g, '/')}</div>
             </header>
 
@@ -86,8 +92,8 @@ export default function Dashboard() {
 
             {notification.message && (
                 <div className={`mb-8 p-4 mx-auto w-full max-w-md font-mono text-sm border-2 ${notification.type === 'success'
-                        ? 'border-lime text-lime'
-                        : 'border-red-500 text-red-500'
+                    ? 'border-lime text-lime'
+                    : 'border-red-500 text-red-500'
                     }`}>
                     {notification.message}
                 </div>
