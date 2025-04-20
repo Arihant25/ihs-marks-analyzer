@@ -5,10 +5,10 @@
 
 :root {
   --black: #000000;
-  --lime: #BFFF00;
-  --blue: #00E0FF;
-  --orange: #FF7A00; /* New neon orange color for History */
-  --gray-dark: #1A1A1A;
+  --lime: #bfff00;
+  --blue: #00e0ff;
+  --orange: #ff7a00; /* New neon orange color for History */
+  --gray-dark: #1a1a1a;
   --gray-medium: #333333;
   --gray-light: #555555;
   --noise-opacity: 0.03;
@@ -22,9 +22,9 @@
 
 @theme inline {
   --color-background: var(--black);
-  --color-foreground: #FFFFFF;
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --color-foreground: #ffffff;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 /* Disable user select and tap highlight for everything */
@@ -39,7 +39,8 @@
 }
 
 /* But enable for specific input elements */
-input, textarea {
+input,
+textarea {
   -webkit-user-select: text;
   -khtml-user-select: text;
   -moz-user-select: text;
@@ -48,7 +49,7 @@ input, textarea {
 }
 
 body {
-  color: #FFFFFF;
+  color: #ffffff;
   background-color: var(--black);
   font-family: var(--font-sans);
   overflow-x: hidden;
@@ -88,7 +89,7 @@ h6 {
 }
 
 .loader:before {
-  content: '';
+  content: "";
   position: absolute;
   transform: translate(-50%, -50%) rotate(45deg);
   height: 100%;
@@ -99,7 +100,7 @@ h6 {
 }
 
 .loader:after {
-  content: '';
+  content: "";
   position: absolute;
   left: 0.2em;
   bottom: 0.18em;
@@ -107,7 +108,7 @@ h6 {
   height: 1em;
   background-color: var(--lime);
   border-radius: 15%;
-  animation: rollingRock 2.5s cubic-bezier(.79, 0, .47, .97) infinite;
+  animation: rollingRock 2.5s cubic-bezier(0.79, 0, 0.47, 0.97) infinite;
 }
 
 .loader-orange:after {
@@ -120,47 +121,47 @@ h6 {
 
 @keyframes rollingRock {
   0% {
-    transform: translate(0, -1em) rotate(-45deg)
+    transform: translate(0, -1em) rotate(-45deg);
   }
 
   5% {
-    transform: translate(0, -1em) rotate(-50deg)
+    transform: translate(0, -1em) rotate(-50deg);
   }
 
   20% {
-    transform: translate(1em, -2em) rotate(47deg)
+    transform: translate(1em, -2em) rotate(47deg);
   }
 
   25% {
-    transform: translate(1em, -2em) rotate(45deg)
+    transform: translate(1em, -2em) rotate(45deg);
   }
 
   30% {
-    transform: translate(1em, -2em) rotate(40deg)
+    transform: translate(1em, -2em) rotate(40deg);
   }
 
   45% {
-    transform: translate(2em, -3em) rotate(137deg)
+    transform: translate(2em, -3em) rotate(137deg);
   }
 
   50% {
-    transform: translate(2em, -3em) rotate(135deg)
+    transform: translate(2em, -3em) rotate(135deg);
   }
 
   55% {
-    transform: translate(2em, -3em) rotate(130deg)
+    transform: translate(2em, -3em) rotate(130deg);
   }
 
   70% {
-    transform: translate(3em, -4em) rotate(217deg)
+    transform: translate(3em, -4em) rotate(217deg);
   }
 
   75% {
-    transform: translate(3em, -4em) rotate(220deg)
+    transform: translate(3em, -4em) rotate(220deg);
   }
 
   100% {
-    transform: translate(0, -1em) rotate(-225deg)
+    transform: translate(0, -1em) rotate(-225deg);
   }
 }
 
@@ -241,22 +242,22 @@ h6 {
     overflow: hidden;
     transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  
+
   .animated-button svg {
     position: absolute;
     width: 24px;
     z-index: 9;
     transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  
+
   .animated-button .arr-1 {
     right: 16px;
   }
-  
+
   .animated-button .arr-2 {
     left: -25%;
   }
-  
+
   .animated-button .circle {
     position: absolute;
     top: 50%;
@@ -268,35 +269,35 @@ h6 {
     opacity: 0;
     transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  
+
   .animated-button .text {
     position: relative;
     z-index: 1;
     transform: translateX(-12px);
     transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  
+
   .animated-button:hover {
     box-shadow: 0 0 0 12px transparent;
     border-radius: 5px;
   }
-  
+
   .animated-button:hover .arr-1 {
     right: -25%;
   }
-  
+
   .animated-button:hover .arr-2 {
     left: 16px;
   }
-  
+
   .animated-button:hover .text {
     transform: translateX(12px);
   }
-  
+
   .animated-button:active {
     scale: 0.95;
   }
-  
+
   .animated-button:hover .circle {
     width: 220px;
     height: 220px;

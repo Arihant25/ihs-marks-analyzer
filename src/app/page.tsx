@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import CasLogin from "@/components/CasLogin";
 import { useState, useEffect } from "react";
@@ -22,7 +22,9 @@ export default function Home() {
         </div>
       ) : (
         <div className="flex flex-col min-h-screen p-8 relative">
-          <div className="absolute top-8 left-8 text-xs text-gray-500 font-mono">IHS_ANALYZER.v1.0</div>
+          <div className="absolute top-8 left-8 text-xs text-gray-500 font-mono">
+            IHS_ANALYZER.v1.0
+          </div>
 
           <main className="flex-grow flex flex-col items-center justify-center pt-16">
             <div className="panel p-8 max-w-xl w-full mb-8 relative">

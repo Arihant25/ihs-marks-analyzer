@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 // Export the middleware function
 export default withAuth(
   function middleware(req) {
-    // If the user is authenticated and trying to access the homepage, 
+    // If the user is authenticated and trying to access the homepage,
     // redirect them to the dashboard
     if (req.nextUrl.pathname === "/") {
       if (req.nextauth.token) {
@@ -27,6 +27,6 @@ export default withAuth(
 );
 
 // Update the matcher to include both the root path and dashboard paths
-export const config = { 
-  matcher: ["/", "/dashboard/:path*"] 
+export const config = {
+  matcher: ["/", "/dashboard/:path*"],
 };
