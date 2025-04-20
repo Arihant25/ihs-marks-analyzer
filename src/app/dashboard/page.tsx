@@ -5,6 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import SubjectBox from "@/components/SubjectBox";
 import AnimatedButton from "@/components/AnimatedButton";
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -101,9 +102,19 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen flex flex-col p-8">
       <header className="mb-16 flex justify-between items-center">
-        <h1 className="text-3xl font-bold font-mono text-lime">
-          IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span>
-        </h1>
+        <div className="flex items-center">
+          <h1 className="text-3xl font-bold font-mono text-lime">
+            IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span>
+          </h1>
+          <div className="ml-8">
+            <AnimatedButton 
+              onClick={() => router.push('/analysis')} 
+              color="lime"
+            >
+              VIEW_ANALYSIS()
+            </AnimatedButton>
+          </div>
+        </div>
         <div className="flex items-center gap-4">
           <div className="text-xs text-gray-500 font-mono">
             {new Date().toISOString().split("T")[0].replace(/-/g, "/")}
