@@ -43,6 +43,14 @@ type AnalysisData = {
         marks: number;
         count: number;
     }[];
+    branchAverages: {
+        branch: string;
+        subjects: {
+            subject: string;
+            averageMarks: number;
+            count: number;
+        }[];
+    }[];
 };
 
 export default function Analysis() {
@@ -95,6 +103,27 @@ export default function Analysis() {
         'Political Science': 'rgb(191, 255, 0)',
         'History': 'rgb(255, 122, 0)', // orange (changed from white)
         'Economics': 'rgb(0, 224, 255)',
+    };
+
+    // Colors for branches
+    const branchColors = {
+        'CSD': 'rgba(255, 105, 180, 0.8)', // hot pink
+        'CSE': 'rgba(191, 255, 0, 0.8)',   // lime
+        'ECE': 'rgba(0, 224, 255, 0.8)',   // blue
+        'ECD': 'rgba(255, 215, 0, 0.8)',   // gold
+        'CND': 'rgba(138, 43, 226, 0.8)',  // purple
+        'CLD': 'rgba(255, 122, 0, 0.8)',   // orange
+        'Unknown': 'rgba(169, 169, 169, 0.8)', // gray
+    };
+
+    const branchBorderColors = {
+        'CSD': 'rgb(255, 105, 180)',
+        'CSE': 'rgb(191, 255, 0)',
+        'ECE': 'rgb(0, 224, 255)',
+        'ECD': 'rgb(255, 215, 0)',
+        'CND': 'rgb(138, 43, 226)',
+        'CLD': 'rgb(255, 122, 0)',
+        'Unknown': 'rgb(169, 169, 169)',
     };
 
     useEffect(() => {
@@ -162,21 +191,25 @@ export default function Analysis() {
 
     // Prepare data for TA Performance chart (bar chart)
     const prepareTAChartData = (subject: string) => {
-        if (!analysisData) return null;
+        if (!analysisData) return { labels: [], datasets: [] };
 
         const subjectData = analysisData.averageMarksByTA.filter(
             item => item.subject === subject
         );
 
+        // If no data exists for this subject, return empty chart data
+        if (subjectData.length === 0) return { labels: [], datasets: [] };
+
         return {
             labels: subjectData.map(item => item.taName),
             datasets: [
                 {
-                    label: `Average Marks for ${subject}`,
                     data: subjectData.map(item => item.averageMarks),
                     backgroundColor: subjectColors[subject as keyof typeof subjectColors],
                     borderColor: borderColors[subject as keyof typeof borderColors],
                     borderWidth: 2,
+                    // Store the student count data for tooltips
+                    studentCounts: subjectData.map(item => item.count)
                 }
             ]
         };
@@ -184,7 +217,7 @@ export default function Analysis() {
 
     // Prepare data for Marks Distribution chart (line chart)
     const prepareDistributionChartData = () => {
-        if (!analysisData) return null;
+        if (!analysisData) return { labels: [], datasets: [] };
 
         // Create bins with more reasonable increments (0, 1, 2, ..., 30)
         // This reduces the number of ticks and improves readability
@@ -224,23 +257,105 @@ export default function Analysis() {
         };
     };
 
+    // Prepare data for branch-wise averages chart
+    const prepareBranchAveragesChartData = () => {
+        if (!analysisData || !analysisData.branchAverages) return { labels: [], datasets: [] };
+
+        // Get filtered branches (excluding Unknown)
+        const filteredBranches = analysisData.branchAverages
+            .filter(branch => branch.branch !== 'Unknown');
+
+        // If no valid branches, return empty chart data
+        if (filteredBranches.length === 0) return { labels: [], datasets: [] };
+
+        // Calculate total student count for each branch
+        const branchStudentCounts = filteredBranches.map(branchData =>
+            branchData.subjects.reduce((total, subject) => total + subject.count, 0)
+        );
+
+        // For each branch, calculate the average total marks
+        // Total marks = 2/3 * (sum of marks in all subjects)
+        return {
+            labels: filteredBranches.map(branchData => branchData.branch),
+            datasets: [
+                {
+                    data: filteredBranches.map(branchData => {
+                        // Sum up marks across all subjects
+                        const totalSubjectMarks = branchData.subjects.reduce(
+                            (total, subject) => total + subject.averageMarks,
+                            0
+                        );
+                        // Apply the 2/3 factor and round to 2 decimal places
+                        return parseFloat(((2 / 3) * totalSubjectMarks).toFixed(2));
+                    }),
+                    backgroundColor: filteredBranches.map(
+                        branchData => branchColors[branchData.branch as keyof typeof branchColors] || branchColors['Unknown']
+                    ),
+                    borderColor: filteredBranches.map(
+                        branchData => branchBorderColors[branchData.branch as keyof typeof branchBorderColors] || branchBorderColors['Unknown']
+                    ),
+                    borderWidth: 2,
+                    // Store student counts for tooltips
+                    studentCounts: branchStudentCounts
+                }
+            ]
+        };
+    };
+
+    // Prepare data for individual branch performance for a specific subject
+    const prepareBranchSubjectPerformanceData = (subject: string) => {
+        if (!analysisData || !analysisData.branchAverages) return { labels: [], datasets: [] };
+
+        const filteredBranches = analysisData.branchAverages
+            .filter(branch => branch.branch !== 'Unknown') // Exclude Unknown branch
+            .map(branchData => {
+                const subjectData = branchData.subjects.find(s => s.subject === subject);
+                return {
+                    branch: branchData.branch,
+                    averageMarks: subjectData ? subjectData.averageMarks : 0,
+                    count: subjectData ? subjectData.count : 0
+                };
+            });
+
+        // If no valid branches, return empty chart data
+        if (filteredBranches.length === 0) return { labels: [], datasets: [] };
+
+        return {
+            labels: filteredBranches.map(b => b.branch),
+            datasets: [
+                {
+                    data: filteredBranches.map(b => b.averageMarks),
+                    backgroundColor: filteredBranches.map(b => branchColors[b.branch as keyof typeof branchColors] || branchColors['Unknown']),
+                    borderColor: filteredBranches.map(b => branchBorderColors[b.branch as keyof typeof branchBorderColors] || branchBorderColors['Unknown']),
+                    borderWidth: 2,
+                    // Store branch data for tooltips
+                    branchData: filteredBranches
+                }
+            ]
+        };
+    };
+
     // Prepare data for individual TA performance across subjects (bar chart)
     const prepareTAPerformanceAcrossSubjects = (taName: string) => {
-        if (!analysisData) return null;
+        if (!analysisData) return { labels: [], datasets: [] };
 
         const taData = analysisData.averageMarksByTA.filter(
             item => item.taName === taName
         );
 
+        // If no data exists for this TA, return empty chart data
+        if (taData.length === 0) return { labels: [], datasets: [] };
+
         return {
             labels: taData.map(item => item.subject),
             datasets: [
                 {
-                    label: `${taName}'s Average Marks`,
                     data: taData.map(item => item.averageMarks),
                     backgroundColor: taData.map(item => subjectColors[item.subject as keyof typeof subjectColors]),
                     borderColor: taData.map(item => borderColors[item.subject as keyof typeof borderColors]),
                     borderWidth: 2,
+                    // Store TA data for tooltips
+                    taData: taData
                 }
             ]
         };
@@ -270,6 +385,30 @@ export default function Analysis() {
                 bodyFont: {
                     family: 'JetBrains Mono',
                 },
+                callbacks: {
+                    afterBody: function (context) {
+                        const dataIndex = context[0].dataIndex;
+                        const datasetIndex = context[0].datasetIndex;
+                        const dataset = context[0].chart.data.datasets[datasetIndex];
+
+                        // For TA Performance chart
+                        if (dataset.studentCounts) {
+                            return `Data Points: ${dataset.studentCounts[dataIndex]}`;
+                        }
+
+                        // For branch subject performance charts
+                        if (dataset.branchData) {
+                            return `Data Points: ${dataset.branchData[dataIndex].count}`;
+                        }
+
+                        // For TA performance across subjects
+                        if (dataset.taData) {
+                            return `Data Points: ${dataset.taData[dataIndex].count}`;
+                        }
+
+                        return '';
+                    }
+                }
             },
         },
         scales: {
@@ -329,7 +468,7 @@ export default function Analysis() {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'Number of Students',
+                    text: 'Number of Data Points',
                     font: {
                         family: 'JetBrains Mono',
                     },
@@ -373,6 +512,79 @@ export default function Analysis() {
                     minRotation: 0,
                     autoSkip: true,
                     maxTicksLimit: 15,  // Limit the number of ticks to improve readability
+                },
+            },
+        },
+    };
+
+    const branchOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top' as const,
+                labels: {
+                    font: {
+                        family: 'JetBrains Mono',
+                    },
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    usePointStyle: true,
+                },
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleFont: {
+                    family: 'JetBrains Mono',
+                },
+                bodyFont: {
+                    family: 'JetBrains Mono',
+                },
+                callbacks: {
+                    afterBody: function (context) {
+                        const dataIndex = context[0].dataIndex;
+                        const datasetIndex = context[0].datasetIndex;
+                        const dataset = context[0].chart.data.datasets[datasetIndex];
+
+                        if (dataset.studentCounts) {
+                            return `Data Points: ${dataset.studentCounts[dataIndex]}`;
+                        }
+
+                        return '';
+                    }
+                }
+            },
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 30,
+                title: {
+                    display: true,
+                    text: 'Average Marks',
+                    font: {
+                        family: 'JetBrains Mono',
+                    },
+                    color: 'rgba(255, 255, 255, 0.7)',
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                },
+                ticks: {
+                    font: {
+                        family: 'JetBrains Mono',
+                    },
+                    color: 'rgba(255, 255, 255, 0.7)',
+                },
+            },
+            x: {
+                grid: {
+                    display: false,
+                },
+                ticks: {
+                    font: {
+                        family: 'JetBrains Mono',
+                    },
+                    color: 'rgba(255, 255, 255, 0.7)',
                 },
             },
         },
@@ -457,7 +669,7 @@ export default function Analysis() {
                                             </div>
                                             <div className="h-px w-full bg-gray-medium my-2"></div>
                                             <div className="flex justify-between items-center">
-                                                <span className="text-sm font-mono text-gray-300">STUDENTS:</span>
+                                                <span className="text-sm font-mono text-gray-300">Data Points:</span>
                                                 <span className="text-xl font-bold font-mono">{getStudentCountPerSubject()[subject]}</span>
                                             </div>
                                         </div>
@@ -466,8 +678,71 @@ export default function Analysis() {
                             })}
                         </div>
 
+                        {/* Branch-wise Performance Visualization */}
+                        <div className="panel panel-highlight p-6 relative mb-8 md:mb-16">
+                            <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// BRANCH_WISE_PERFORMANCE</div>
+                            <h3 className="text-lg font-bold mb-6 font-mono text-lime">BRANCH_WISE_TOTAL_MARKS</h3>
+                            <div className="h-80">
+                                <Bar
+                                    data={prepareBranchAveragesChartData() || { labels: [], datasets: [] }}
+                                    options={{
+                                        ...branchOptions,
+                                        scales: {
+                                            ...branchOptions.scales,
+                                            y: {
+                                                ...branchOptions.scales.y,
+                                                max: 60,
+                                                title: {
+                                                    display: true,
+                                                    text: 'Average Total Marks',
+                                                    font: {
+                                                        family: 'JetBrains Mono',
+                                                    },
+                                                    color: 'rgba(255, 255, 255, 0.7)',
+                                                },
+                                            }
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Branch-wise Performance for Each Subject */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-16 mx-auto w-full">
+                            <div className="panel panel-highlight p-4 md:p-6 relative">
+                                <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// POLITICAL_SCIENCE_BRANCH_PERFORMANCE</div>
+                                <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-lime">POLITICAL_SCIENCE_BRANCHES</h3>
+                                <div className="h-64">
+                                    <Bar
+                                        data={prepareBranchSubjectPerformanceData('Political Science') || { labels: [], datasets: [] }}
+                                        options={barOptions}
+                                    />
+                                </div>
+                            </div>
+                            <div className="panel panel-tertiary p-4 md:p-6 relative">
+                                <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// HISTORY_BRANCH_PERFORMANCE</div>
+                                <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-orange">HISTORY_BRANCHES</h3>
+                                <div className="h-64">
+                                    <Bar
+                                        data={prepareBranchSubjectPerformanceData('History') || { labels: [], datasets: [] }}
+                                        options={barOptions}
+                                    />
+                                </div>
+                            </div>
+                            <div className="panel panel-secondary p-4 md:p-6 relative">
+                                <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// ECONOMICS_BRANCH_PERFORMANCE</div>
+                                <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-blue">ECONOMICS_BRANCHES</h3>
+                                <div className="h-64">
+                                    <Bar
+                                        data={prepareBranchSubjectPerformanceData('Economics') || { labels: [], datasets: [] }}
+                                        options={barOptions}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Marks Distribution Line Chart */}
-                        <div className="panel panel-highlight p-6">
+                        <div className="panel panel-highlight p-6 relative">
                             <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">// MARKS_DISTRIBUTION</div>
                             <h3 className="text-lg font-bold mb-6 font-mono text-lime">MARKS_DISTRIBUTION_ACROSS_SUBJECTS</h3>
                             <div className="h-80">
@@ -536,6 +811,12 @@ export default function Analysis() {
                                                                 color: 'rgba(255, 255, 255, 0.7)',
                                                             },
                                                         },
+                                                        tooltip: {
+                                                            ...barOptions.plugins.tooltip,
+                                                            callbacks: {
+                                                                ...barOptions.plugins.tooltip.callbacks
+                                                            }
+                                                        }
                                                     },
                                                 }}
                                             />

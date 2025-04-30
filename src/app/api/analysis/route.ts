@@ -2,6 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Marks from '@/models/Marks';
 
+// Branch identification based on roll number patterns
+function getBranchFromRollNumber(rollNumber: string): string {
+    if (!rollNumber || typeof rollNumber !== 'string') return 'Unknown';
+
+    // Extract the branch code part from the roll number
+    // The pattern is XXXX[branch-code]XXX
+    const match = rollNumber.match(/^\d{4}(\d{3})\d{3}$/);
+    if (!match) return 'Unknown';
+
+    const branchCode = match[1];
+
+    switch (branchCode) {
+        case '111': return 'CSD';
+        case '101': return 'CSE';
+        case '102': return 'ECE';
+        case '112': return 'ECD';
+        case '113': return 'CND';
+        case '114': return 'CLD';
+        default: return 'Unknown';
+    }
+}
+
 export async function GET(request: NextRequest) {
     try {
         // Connect to the database
@@ -35,6 +57,41 @@ export async function GET(request: NextRequest) {
             }
         ]);
 
+        // Get all marks data to calculate branch-wise averages
+        const allMarks = await Marks.find({}).lean();
+
+        // Group marks by branch and subject
+        const branchData: Record<string, Record<string, { total: number, count: number }>> = {};
+
+        allMarks.forEach(mark => {
+            const branch = getBranchFromRollNumber(mark.rollNumber);
+
+            if (!branchData[branch]) {
+                branchData[branch] = {};
+            }
+
+            if (!branchData[branch][mark.subject]) {
+                branchData[branch][mark.subject] = { total: 0, count: 0 };
+            }
+
+            branchData[branch][mark.subject].total += mark.marks;
+            branchData[branch][mark.subject].count += 1;
+        });
+
+        // Format branch data for response
+        const branchAverages = Object.entries(branchData).map(([branch, subjects]) => {
+            const subjectAverages = Object.entries(subjects).map(([subject, data]) => ({
+                subject,
+                averageMarks: parseFloat((data.total / data.count).toFixed(2)),
+                count: data.count
+            }));
+
+            return {
+                branch,
+                subjects: subjectAverages
+            };
+        });
+
         // Format the response data
         const formattedAveragesByTA = averageMarksByTA.map(item => ({
             subject: item._id.subject,
@@ -52,7 +109,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
             {
                 averageMarksByTA: formattedAveragesByTA,
-                marksDistribution: formattedDistribution
+                marksDistribution: formattedDistribution,
+                branchAverages: branchAverages
             },
             { status: 200 }
         );
