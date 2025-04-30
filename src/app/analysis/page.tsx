@@ -386,7 +386,7 @@ export default function Analysis() {
                     family: 'JetBrains Mono',
                 },
                 callbacks: {
-                    afterBody: function (context) {
+                    afterBody: function (context: any) {
                         const dataIndex = context[0].dataIndex;
                         const datasetIndex = context[0].datasetIndex;
                         const dataset = context[0].chart.data.datasets[datasetIndex];
@@ -540,7 +540,7 @@ export default function Analysis() {
                     family: 'JetBrains Mono',
                 },
                 callbacks: {
-                    afterBody: function (context) {
+                    afterBody: function (context: any) {
                         const dataIndex = context[0].dataIndex;
                         const datasetIndex = context[0].datasetIndex;
                         const dataset = context[0].chart.data.datasets[datasetIndex];
