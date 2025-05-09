@@ -2,21 +2,21 @@ import mongoose, { Schema } from "mongoose";
 
 // Define the TA options
 const taOptions = [
-  "Tanveer",
-  "Sreenivas",
-  "Medha",
-  "Sathvika",
-  "Anushka",
-  "Tanish",
-  "Kriti",
-  "Gargie",
-  "Rohan",
   "Aadi",
-  "Asirith",
-  "Chetan",
-  "Rushil",
   "Akshit",
+  "Anushka",
+  "Asirith",
   "Chandana",
+  "Chetan",
+  "Gargie",
+  "Kriti",
+  "Medha",
+  "Rohan",
+  "Rushil",
+  "Sathvika",
+  "Sreenivas",
+  "Tanish",
+  "Tanveer",
 ];
 
 // Define the Marks schema

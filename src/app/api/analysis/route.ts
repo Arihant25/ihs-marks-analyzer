@@ -106,11 +106,22 @@ export async function GET(request: NextRequest) {
             count: item.count
         }));
 
+        // Group marks by student for total marks calculation
+        const studentMarks: Record<string, Record<string, number>> = {};
+
+        allMarks.forEach(mark => {
+            if (!studentMarks[mark.rollNumber]) {
+                studentMarks[mark.rollNumber] = {};
+            }
+            studentMarks[mark.rollNumber][mark.subject] = mark.marks;
+        });
+
         return NextResponse.json(
             {
                 averageMarksByTA: formattedAveragesByTA,
                 marksDistribution: formattedDistribution,
-                branchAverages: branchAverages
+                branchAverages: branchAverages,
+                studentMarks: studentMarks
             },
             { status: 200 }
         );

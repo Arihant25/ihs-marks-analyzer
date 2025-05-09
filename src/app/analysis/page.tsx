@@ -51,6 +51,7 @@ type AnalysisData = {
       count: number;
     }[];
   }[];
+  studentMarks: Record<string, Record<string, number>>;
 };
 
 export default function Analysis() {
@@ -304,7 +305,7 @@ export default function Analysis() {
           borderColor: filteredBranches.map(
             (branchData) =>
               branchBorderColors[
-                branchData.branch as keyof typeof branchBorderColors
+              branchData.branch as keyof typeof branchBorderColors
               ] || branchBorderColors["Unknown"]
           ),
           borderWidth: 2,
@@ -395,6 +396,87 @@ export default function Analysis() {
 
     const taNames = analysisData.averageMarksByTA.map((item) => item.taName);
     return [...new Set(taNames)];
+  };
+
+  // Function to prepare data for Total Marks distribution (grading curve)
+  const prepareTotalMarksChartData = () => {
+    if (!analysisData || !analysisData.studentMarks) return { labels: [], datasets: [] };
+
+    // Get all subjects
+    const subjects = Object.keys(subjectColors);
+
+    // Calculate total marks for each student
+    const studentTotals: number[] = [];
+
+    // Process actual student data from the API
+    Object.entries(analysisData.studentMarks).forEach(([rollNumber, subjectMarks]) => {
+      // Sum all subject marks for this student
+      let totalMarks = 0;
+      let subjectCount = 0;
+
+      subjects.forEach(subject => {
+        if (subjectMarks[subject]) {
+          totalMarks += subjectMarks[subject];
+          subjectCount++;
+        }
+      });
+
+      // Only include students who have marks for all subjects
+      if (subjectCount === subjects.length) {
+        // Apply 2/3 factor and add to student totals
+        studentTotals.push(totalMarks * 2 / 3);
+      }
+    });
+
+    // Round to nearest integer for better visualization
+    const roundedTotals = studentTotals.map(total => Math.round(total));
+
+    // Create frequency distribution (how many students got each total)
+    const distribution: Record<number, number> = {};
+    roundedTotals.forEach(total => {
+      if (!distribution[total]) {
+        distribution[total] = 0;
+      }
+      distribution[total]++;
+    });
+
+    // Create array of distinct totals, sorted
+    const sortedTotals = Object.keys(distribution)
+      .map(Number)
+      .sort((a, b) => a - b);
+
+    // If no totals found, return empty chart
+    if (sortedTotals.length === 0) return { labels: [], datasets: [] };
+
+    // Define the range of totals to show (min to max)
+    const minTotal = Math.min(...sortedTotals);
+    const maxTotal = Math.max(...sortedTotals);
+
+    // Create labels for each possible total in the range
+    const labels = Array.from(
+      { length: maxTotal - minTotal + 1 },
+      (_, i) => (minTotal + i).toString()
+    );
+
+    // Create data array with counts for each total
+    const data = labels.map(label => distribution[parseInt(label)] || 0);
+
+    return {
+      labels,
+      datasets: [
+        {
+          label: "",
+          data,
+          backgroundColor: "rgba(75, 192, 192, 0.6)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+        }
+      ],
+    };
   };
 
   // Chart options
@@ -699,14 +781,14 @@ export default function Analysis() {
                     subject === "Political Science"
                       ? "panel-highlight text-lime"
                       : subject === "History"
-                      ? "panel-tertiary text-orange"
-                      : subject === "Economics"
-                      ? "panel-secondary text-blue"
-                      : subject === "Sociology"
-                      ? "panel-gold text-gold" // Updated to gold
-                      : subject === "Philosophy"
-                      ? "panel-pink text-pink" // Updated to pink
-                      : "panel-gray text-gray-500";
+                        ? "panel-tertiary text-orange"
+                        : subject === "Economics"
+                          ? "panel-secondary text-blue"
+                          : subject === "Sociology"
+                            ? "panel-gold text-gold" // Updated to gold
+                            : subject === "Philosophy"
+                              ? "panel-pink text-pink" // Updated to pink
+                              : "panel-gray text-gray-500";
                   return (
                     <div
                       key={subject}
@@ -741,6 +823,61 @@ export default function Analysis() {
                   );
                 }
               )}
+            </div>
+
+                        {/* Total Marks Graph */}
+            <div className="panel panel-highlight p-6 relative">
+              <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">
+                // Course total distribution
+              </div>
+              <h3 className="text-lg font-bold mb-6 font-mono text-lime">
+                COURSE_TOTAL_DiSTRIBUTION
+              </h3>
+              <div className="h-80">
+                <Line
+                  data={
+                    prepareTotalMarksChartData() || {
+                      labels: [],
+                      datasets: [],
+                    }
+                  }
+                  options={{
+                    ...lineOptions,
+                    plugins: {
+                      ...lineOptions.plugins,
+                      legend: {
+                        ...lineOptions.plugins.legend,
+                        display: false, // Hide legend since we're not showing labels
+                      },
+                    },
+                    scales: {
+                      ...lineOptions.scales,
+                      x: {
+                        title: {
+                          display: true,
+                          text: "Course Total",
+                          font: {
+                            family: "JetBrains Mono",
+                          },
+                          color: "rgba(255, 255, 255, 0.7)",
+                        }
+                      },
+                      y: {
+                        ...lineOptions.scales.y,
+                        beginAtZero: true,
+                        title: {
+                          display: true,
+                          text: "Number of Students",
+                          font: {
+                            family: "JetBrains Mono",
+                          },
+                          color: "rgba(255, 255, 255, 0.7)",
+                        }
+                      }
+                    }
+                  }}
+                />
+              </div>
             </div>
 
             {/* Branch-wise Performance Visualization */}
@@ -848,14 +985,12 @@ export default function Analysis() {
               </div>
               <div className="panel panel-gold p-4 md:p-6 relative">
                 {" "}
-                {/* Updated to gold panel */}
                 <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">
                   // SOCIOLOGY_BRANCH_PERFORMANCE
                 </div>
                 <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-gold">
                   SOCIOLOGY_BRANCHES
                 </h3>{" "}
-                {/* Updated to gold text */}
                 <div className="h-64">
                   <Bar
                     data={
@@ -870,14 +1005,12 @@ export default function Analysis() {
               </div>
               <div className="panel panel-pink p-4 md:p-6 relative">
                 {" "}
-                {/* Updated to pink panel */}
                 <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">
                   // PHILOSOPHY_BRANCH_PERFORMANCE
                 </div>
                 <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-pink">
                   PHILOSOPHY_BRANCHES
                 </h3>{" "}
-                {/* Updated to pink text */}
                 <div className="h-64">
                   <Bar
                     data={

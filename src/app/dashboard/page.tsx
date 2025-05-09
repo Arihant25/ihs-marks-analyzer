@@ -34,8 +34,7 @@ export default function Dashboard() {
       if (session?.user?.rollNumber) {
         try {
           const response = await fetch(
-            `/api/marks?rollNumber=${
-              session.user.rollNumber
+            `/api/marks?rollNumber=${session.user.rollNumber
             }&subject=${encodeURIComponent(subject)}`
           );
           if (response.ok) {
@@ -139,6 +138,37 @@ export default function Dashboard() {
     }
   };
 
+  // Calculate the course total
+  const calculateCourseTotal = () => {
+    // Get all subject marks
+    const subjects = ["Political Science", "History", "Economics", "Sociology", "Philosophy"];
+    let totalMarks = 0;
+    let subjectCount = 0;
+
+    // Sum marks for all subjects
+    subjects.forEach(subject => {
+      if (subjectMarks[subject] !== undefined) {
+        totalMarks += subjectMarks[subject];
+        subjectCount++;
+      }
+    });
+
+    // Only calculate if student has all subjects
+    if (subjectCount == subjects.length) {
+      // Apply 2/3 factor and round to 2 decimal places
+      return parseFloat(((2 / 3) * totalMarks).toFixed(2));
+    }
+    return 0;
+  };
+
+  // Added page loading animation
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
   if (status === "loading" || pageLoading) {
     return (
       <div className="loading-screen">
@@ -222,13 +252,25 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Course Total Box */}
+      <div className="mb-8 panel p-4 mx-auto w-full max-w-md relative">
+        <div className="absolute -top-2 right-4 text-xs text-orange font-mono">
+          // COURSE_TOTAL
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm text-gray-300 font-mono mb-1">TOTAL_MARKS:</div>
+            <div className="font-bold text-orange text-xl">{calculateCourseTotal()}</div>
+          </div>
+        </div>
+      </div>
+
       {notification.message && (
         <div
-          className={`mb-8 p-4 mx-auto w-full max-w-md font-mono text-sm border-2 ${
-            notification.type === "success"
+          className={`mb-8 p-4 mx-auto w-full max-w-md font-mono text-sm border-2 ${notification.type === "success"
               ? "border-lime text-lime"
               : "border-red-500 text-red-500"
-          }`}
+            }`}
         >
           {notification.message}
         </div>
