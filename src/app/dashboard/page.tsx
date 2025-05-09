@@ -104,11 +104,12 @@ export default function Dashboard() {
         <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div className="flex flex-col gap-4">
             <h1 className="text-2xl md:text-3xl font-bold font-mono text-lime">
-              IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span>
+              IHS_ANALYZER
+              <span className="text-xs text-gray-500 ml-2">v1.0</span>
             </h1>
             <div className="md:hidden w-full flex justify-center">
               <AnimatedButton
-                onClick={() => router.push('/analysis')}
+                onClick={() => router.push("/analysis")}
                 color="orange"
               >
                 VIEW_ANALYSIS()
@@ -119,7 +120,7 @@ export default function Dashboard() {
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="hidden md:block">
               <AnimatedButton
-                onClick={() => router.push('/analysis')}
+                onClick={() => router.push("/analysis")}
                 color="orange"
               >
                 VIEW_ANALYSIS()
@@ -137,11 +138,13 @@ export default function Dashboard() {
                 </AnimatedButton>
               </div>
               <div className="text-xs text-gray-500 font-mono">
-                {new Date().toLocaleDateString('en-IN', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit'
-                }).replace(/\//g, '/')}
+                {new Date()
+                  .toLocaleDateString("en-IN", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })
+                  .replace(/\//g, "/")}
               </div>
             </div>
           </div>
@@ -172,10 +175,11 @@ export default function Dashboard() {
 
       {notification.message && (
         <div
-          className={`mb-8 p-4 mx-auto w-full max-w-md font-mono text-sm border-2 ${notification.type === "success"
-            ? "border-lime text-lime"
-            : "border-red-500 text-red-500"
-            }`}
+          className={`mb-8 p-4 mx-auto w-full max-w-md font-mono text-sm border-2 ${
+            notification.type === "success"
+              ? "border-lime text-lime"
+              : "border-red-500 text-red-500"
+          }`}
         >
           {notification.message}
         </div>
@@ -196,6 +200,16 @@ export default function Dashboard() {
           title="Economics"
           onSubmit={(data) => handleSubjectSubmit("Economics", data)}
           color="blue"
+        />
+        <SubjectBox
+          title="Sociology"
+          onSubmit={(data) => handleSubjectSubmit("Sociology", data)}
+          color="gold"
+        />
+        <SubjectBox
+          title="Philosophy"
+          onSubmit={(data) => handleSubjectSubmit("Philosophy", data)}
+          color="pink"
         />
       </div>
 

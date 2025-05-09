@@ -41,7 +41,9 @@ export default function Home() {
                 Track and analyze your academic performance across
                 <span className="text-lime"> Political Science</span>,
                 <span className="text-orange"> History</span>, and
-                <span className="text-blue"> Economics</span>
+                <span className="text-blue"> Economics</span>,
+                <span className="text-gold"> Sociology</span>, and
+                <span className="text-pink"> Philosophy</span>.
               </p>
 
               <CasLogin />

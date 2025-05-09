@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 interface AnimatedButtonProps {
   children: ReactNode;
   onClick?: () => void;
-  color?: "lime" | "blue" | "orange";
+  color?: "lime" | "blue" | "orange" | "gold" | "pink";
   type?: "button" | "submit" | "reset";
   className?: string;
   disabled?: boolean;

@@ -6,7 +6,7 @@ import AnimatedButton from "./AnimatedButton";
 type SubjectBoxProps = {
   title: string;
   onSubmit: (data: { taName: string; marks: number }) => void;
-  color?: "lime" | "blue" | "orange";
+  color?: "lime" | "blue" | "orange" | "gold" | "pink"; // Updated sociology to gold and philosophy to pink
 };
 
 const taOptions = [
@@ -57,6 +57,10 @@ export default function SubjectBox({
         return "panel-secondary";
       case "orange":
         return "panel-tertiary";
+      case "gold":
+        return "panel-gold"; // Added for gold
+      case "pink":
+        return "panel-pink"; // Added for pink
       default:
         return "";
     }
@@ -73,7 +77,9 @@ export default function SubjectBox({
         // {title.toUpperCase().replace(" ", "_")}_MODULE
       </div>
 
-      <h2 className={`text-lg md:text-xl font-bold mb-4 md:mb-6 font-mono uppercase ${textColor}`}>
+      <h2
+        className={`text-lg md:text-xl font-bold mb-4 md:mb-6 font-mono uppercase ${textColor}`}
+      >
         {title.replace(" ", "_")}
       </h2>
 

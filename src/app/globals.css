@@ -8,7 +8,8 @@
   --lime: #bfff00;
   --blue: #00e0ff;
   --orange: #ff7a00;
-  /* New neon orange color for History */
+  --gold: #ffd700;
+  --pink: #ff007f;
   --gray-dark: #1a1a1a;
   --gray-medium: #333333;
   --gray-light: #555555;
@@ -230,6 +231,14 @@ h6 {
     border-color: var(--orange);
   }
 
+  .panel-gold {
+    border-color: var(--gold);
+  }
+
+  .panel-pink {
+    border-color: var(--pink);
+  }
+
   .text-lime {
     color: var(--lime);
   }
@@ -240,6 +249,14 @@ h6 {
 
   .text-orange {
     color: var(--orange);
+  }
+
+  .text-gold {
+    color: var(--gold);
+  }
+
+  .text-pink {
+    color: var(--pink);
   }
 
   .bg-lime {
@@ -254,6 +271,14 @@ h6 {
     background-color: var(--orange);
   }
 
+  .bg-gold {
+    background-color: var(--gold);
+  }
+
+  .bg-pink {
+    background-color: var(--pink);
+  }
+
   .border-lime {
     border-color: var(--lime);
   }
@@ -264,6 +289,14 @@ h6 {
 
   .border-orange {
     border-color: var(--orange);
+  }
+
+  .border-gold {
+    border-color: var(--gold);
+  }
+
+  .border-pink {
+    border-color: var(--pink);
   }
 
   /* Animated Button Styles */
@@ -422,6 +455,58 @@ h6 {
 
   .animated-button-orange:active {
     box-shadow: 0 0 0 4px var(--orange);
+  }
+
+  /* Colors for animated button - Gold */
+  .animated-button-gold {
+    color: var(--gold);
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+
+  .animated-button-gold svg {
+    fill: var(--gold);
+  }
+
+  .animated-button-gold .circle {
+    background-color: var(--gold);
+  }
+
+  .animated-button-gold:hover {
+    color: var(--black);
+  }
+
+  .animated-button-gold:hover svg {
+    fill: var(--black);
+  }
+
+  .animated-button-gold:active {
+    box-shadow: 0 0 0 4px var(--gold);
+  }
+
+  /* Colors for animated button - Pink */
+  .animated-button-pink {
+    color: var(--pink);
+    box-shadow: 0 0 0 2px var(--pink);
+  }
+
+  .animated-button-pink svg {
+    fill: var(--pink);
+  }
+
+  .animated-button-pink .circle {
+    background-color: var(--pink);
+  }
+
+  .animated-button-pink:hover {
+    color: var(--black);
+  }
+
+  .animated-button-pink:hover svg {
+    fill: var(--black);
+  }
+
+  .animated-button-pink:active {
+    box-shadow: 0 0 0 4px var(--pink);
   }
 
   .btn {
