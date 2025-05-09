@@ -7,6 +7,7 @@ type SubjectBoxProps = {
   title: string;
   onSubmit: (data: { taName: string; marks: number }) => void;
   color?: "lime" | "blue" | "orange" | "gold" | "pink";
+  initialMarks?: number; // Added initialMarks prop
 };
 
 const taOptions = [
@@ -31,9 +32,18 @@ export default function SubjectBox({
   title,
   onSubmit,
   color,
+  initialMarks, // Destructure initialMarks
 }: SubjectBoxProps) {
   const [taName, setTaName] = React.useState(taOptions[0]);
-  const [marks, setMarks] = React.useState<number>(0);
+  const [marks, setMarks] = React.useState<number>(initialMarks || 0); // Use initialMarks or default to 0
+
+  // Update marks state if initialMarks changes
+  React.useEffect(() => {
+    if (initialMarks !== undefined) {
+      // Simplified condition, as we always want to sync if initialMarks is provided
+      setMarks(initialMarks);
+    }
+  }, [initialMarks]); // Removed 'marks' from dependency array
 
   const accentColor = color || "white";
   const textColor = `text-${accentColor}`;
