@@ -152,7 +152,7 @@ export default function Dashboard() {
       </header>
 
       <div className="mb-8 panel p-4 mx-auto w-full max-w-md relative">
-        <div className="absolute -top-2 right-4 text-xs text-blue font-mono">
+        <div className="absolute -top-2 right-4 text-xs text-pink font-mono">
           // USER_IDENTIFICATION
         </div>
         <div className="flex justify-between items-center">

@@ -6,7 +6,7 @@ import AnimatedButton from "./AnimatedButton";
 type SubjectBoxProps = {
   title: string;
   onSubmit: (data: { taName: string; marks: number }) => void;
-  color?: "lime" | "blue" | "orange" | "gold" | "pink"; // Updated sociology to gold and philosophy to pink
+  color?: "lime" | "blue" | "orange" | "gold" | "pink";
 };
 
 const taOptions = [
@@ -37,6 +37,7 @@ export default function SubjectBox({
 
   const accentColor = color || "white";
   const textColor = `text-${accentColor}`;
+  const focusBorderColor = `focus:border-${accentColor}`;
 
   // Handle marks input change with decimal support
   const handleMarksChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,7 +96,7 @@ export default function SubjectBox({
             id={`ta-${title}`}
             value={taName}
             onChange={(e) => setTaName(e.target.value)}
-            className="input-field w-full appearance-none text-sm md:text-base"
+            className={`input-field w-full appearance-none text-sm md:text-base ${focusBorderColor}`}
           >
             {taOptions.map((name) => (
               <option key={name} value={name} className="bg-black">
@@ -120,7 +121,7 @@ export default function SubjectBox({
             step="0.01"
             value={marks}
             onChange={handleMarksChange}
-            className="input-field w-full text-sm md:text-base"
+            className={`input-field w-full text-sm md:text-base ${focusBorderColor}`}
           />
         </div>
 

@@ -283,20 +283,50 @@ h6 {
     border-color: var(--lime);
   }
 
+  .focus\:border-lime {
+    &:focus {
+      border-color: var(--lime);
+    }
+  }
+
   .border-blue {
     border-color: var(--blue);
+  }
+
+  .focus\:border-blue {
+    &:focus {
+      border-color: var(--blue);
+    }
   }
 
   .border-orange {
     border-color: var(--orange);
   }
 
+  .focus\:border-orange {
+    &:focus {
+      border-color: var(--orange);
+    }
+  }
+
   .border-gold {
     border-color: var(--gold);
   }
 
+  .focus\:border-gold {
+    &:focus {
+      border-color: var(--gold);
+    }
+  }
+
   .border-pink {
     border-color: var(--pink);
+  }
+
+  .focus\:border-pink {
+    &:focus {
+      border-color: var(--pink);
+    }
   }
 
   /* Animated Button Styles */
@@ -571,7 +601,6 @@ h6 {
   }
 
   .input-field:focus {
-    border-color: var(--lime);
     outline: none;
   }
 
