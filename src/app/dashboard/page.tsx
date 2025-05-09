@@ -28,14 +28,6 @@ export default function Dashboard() {
     {}
   );
 
-  // Simulate initial page loading
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 0);
-    return () => clearTimeout(timer);
-  }, []);
-
   // Fetch initial marks and TA for all subjects
   React.useEffect(() => {
     const fetchMarksForSubject = async (subject: string) => {
@@ -76,7 +68,15 @@ export default function Dashboard() {
       "Sociology",
       "Philosophy",
     ];
-    subjects.forEach(fetchMarksForSubject);
+
+    const fetchAll = async () => {
+      await Promise.all(subjects.map(fetchMarksForSubject));
+      setPageLoading(false);
+    };
+
+    if (session?.user?.rollNumber) {
+      fetchAll();
+    }
   }, [session]);
 
   const handleLogout = async () => {
