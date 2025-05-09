@@ -24,6 +24,9 @@ export default function Dashboard() {
   const [subjectMarks, setSubjectMarks] = React.useState<
     Record<string, number>
   >({});
+  const [subjectTAs, setSubjectTAs] = React.useState<Record<string, string>>(
+    {}
+  );
 
   // Simulate initial page loading
   React.useEffect(() => {
@@ -33,7 +36,7 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fetch initial marks for all subjects
+  // Fetch initial marks and TA for all subjects
   React.useEffect(() => {
     const fetchMarksForSubject = async (subject: string) => {
       if (session?.user?.rollNumber) {
@@ -49,13 +52,19 @@ export default function Dashboard() {
               ...prevMarks,
               [subject]: data.marks,
             }));
+            setSubjectTAs((prevTAs) => ({
+              ...prevTAs,
+              [subject]: data.taName,
+            }));
           } else {
             console.error(`Failed to fetch marks for ${subject}`);
             setSubjectMarks((prevMarks) => ({ ...prevMarks, [subject]: 0 }));
+            setSubjectTAs((prevTAs) => ({ ...prevTAs, [subject]: "Tanveer" }));
           }
         } catch (error) {
           console.error(`Error fetching marks for ${subject}:`, error);
           setSubjectMarks((prevMarks) => ({ ...prevMarks, [subject]: 0 }));
+          setSubjectTAs((prevTAs) => ({ ...prevTAs, [subject]: "Tanveer" }));
         }
       }
     };
@@ -231,30 +240,35 @@ export default function Dashboard() {
           onSubmit={(data) => handleSubjectSubmit("Political Science", data)}
           color="lime"
           initialMarks={subjectMarks["Political Science"]}
+          initialTA={subjectTAs["Political Science"]}
         />
         <SubjectBox
           title="History"
           onSubmit={(data) => handleSubjectSubmit("History", data)}
           color="orange"
           initialMarks={subjectMarks["History"]}
+          initialTA={subjectTAs["History"]}
         />
         <SubjectBox
           title="Economics"
           onSubmit={(data) => handleSubjectSubmit("Economics", data)}
           color="blue"
           initialMarks={subjectMarks["Economics"]}
+          initialTA={subjectTAs["Economics"]}
         />
         <SubjectBox
           title="Sociology"
           onSubmit={(data) => handleSubjectSubmit("Sociology", data)}
           color="gold"
           initialMarks={subjectMarks["Sociology"]}
+          initialTA={subjectTAs["Sociology"]}
         />
         <SubjectBox
           title="Philosophy"
           onSubmit={(data) => handleSubjectSubmit("Philosophy", data)}
           color="pink"
           initialMarks={subjectMarks["Philosophy"]}
+          initialTA={subjectTAs["Philosophy"]}
         />
       </div>
 

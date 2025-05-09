@@ -47,11 +47,31 @@ export async function GET(request: NextRequest) {
       subject,
     });
 
+    // Get TA options from the model
+    const taOptions = [
+      "Tanveer",
+      "Sreenivas",
+      "Medha",
+      "Sathvika",
+      "Anushka",
+      "Tanish",
+      "Kriti",
+      "Gargie",
+      "Rohan",
+      "Aadi",
+      "Asirith",
+      "Chetan",
+      "Rushil",
+      "Akshit",
+      "Chandana",
+    ];
+
     if (!marksEntry) {
-      return NextResponse.json({ marks: 0 }, { status: 200 }); // Return 0 if no entry found
+      // Return 0 marks and default TA if no entry found
+      return NextResponse.json({ marks: 0, taName: taOptions[0] }, { status: 200 });
     }
 
-    return NextResponse.json({ marks: marksEntry.marks }, { status: 200 });
+    return NextResponse.json({ marks: marksEntry.marks, taName: marksEntry.taName }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching marks:", error);
     return NextResponse.json(
