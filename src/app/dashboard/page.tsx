@@ -184,7 +184,7 @@ export default function Dashboard() {
           <div className="flex flex-col gap-4">
             <h1 className="text-2xl md:text-3xl font-bold font-mono text-lime">
               IHS_ANALYZER
-              <span className="text-xs text-gray-500 ml-2">v1.0</span>
+              <span className="text-xs text-gray-500 ml-2">v2.0</span>
             </h1>
             <div className="md:hidden w-full flex justify-center">
               <AnimatedButton
@@ -268,8 +268,8 @@ export default function Dashboard() {
       {notification.message && (
         <div
           className={`mb-8 p-4 mx-auto w-full max-w-md font-mono text-sm border-2 ${notification.type === "success"
-              ? "border-lime text-lime"
-              : "border-red-500 text-red-500"
+            ? "border-lime text-lime"
+            : "border-red-500 text-red-500"
             }`}
         >
           {notification.message}

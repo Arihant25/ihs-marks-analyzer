@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import AnimatedButton from "@/components/AnimatedButton";
 import RotateDevicePrompt from "@/components/RotateDevicePrompt";
 import {
@@ -56,6 +56,12 @@ type AnalysisData = {
 
 export default function Analysis() {
   const router = useRouter();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push("/");
+    },
+  });
   const [pageLoading, setPageLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -398,6 +404,46 @@ export default function Analysis() {
     return [...new Set(taNames)];
   };
 
+  // Calculate average course total
+  const calculateAverageCourseTotal = () => {
+    if (!analysisData || !analysisData.studentMarks) return { average: 0, count: 0 };
+
+    // Get all subjects
+    const subjects = Object.keys(subjectColors);
+
+    // Calculate total marks for each student
+    const studentTotals: number[] = [];
+
+    // Process actual student data from the API
+    Object.entries(analysisData.studentMarks).forEach(([rollNumber, subjectMarks]) => {
+      // Sum all subject marks for this student
+      let totalMarks = 0;
+      let subjectCount = 0;
+
+      subjects.forEach(subject => {
+        if (subjectMarks[subject]) {
+          totalMarks += subjectMarks[subject];
+          subjectCount++;
+        }
+      });
+
+      // Only include students who have marks for all subjects
+      if (subjectCount === subjects.length) {
+        // Apply 2/3 factor and add to student totals
+        studentTotals.push(totalMarks * 2 / 3);
+      }
+    });
+
+    // Calculate the average of all student totals
+    const totalSum = studentTotals.reduce((sum, total) => sum + total, 0);
+    const average = studentTotals.length > 0 ? parseFloat((totalSum / studentTotals.length).toFixed(2)) : 0;
+
+    return {
+      average,
+      count: studentTotals.length
+    };
+  };
+
   // Function to prepare data for Total Marks distribution (grading curve)
   const prepareTotalMarksChartData = () => {
     if (!analysisData || !analysisData.studentMarks) return { labels: [], datasets: [] };
@@ -698,7 +744,61 @@ export default function Analysis() {
         },
       },
     },
+  };  // Function to check if student has data for all subjects
+  const hasCompleteData = () => {
+    if (!analysisData || !analysisData.studentMarks || !session?.user?.rollNumber) return false;
+
+    // Get all subjects
+    const subjects = Object.keys(subjectColors);
+
+    // Get the current user's roll number
+    const currentUserRollNumber = session.user.rollNumber;
+
+    // Check if the current user's data exists
+    if (!analysisData.studentMarks[currentUserRollNumber]) return false;
+
+    // Check if the current user has marks for all subjects
+    const userMarks = analysisData.studentMarks[currentUserRollNumber];
+    let completeData = true;
+
+    subjects.forEach(subject => {
+      if (userMarks[subject] === undefined) {
+        completeData = false;
+        console.log(`Current user is missing marks for ${subject}`);
+      }
+    });
+
+    return completeData;
   };
+
+  // Incomplete Data Overlay Component
+  const IncompleteDataOverlay = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm">
+      <div className="panel panel-highlight p-6 w-11/12 max-w-lg border-2 border-lime">
+        <h2 className="text-xl md:text-2xl font-bold mb-4 font-mono text-lime">
+          INCOMPLETE_DATA_WARNING
+        </h2>
+        <p className="font-mono text-white mb-6">
+          Analysis requires complete data for all subjects to provide accurate results.
+          Please upload marks for all subjects from the dashboard.
+        </p>
+        <div className="flex flex-col md:flex-row gap-4 justify-center">
+          <AnimatedButton
+            color="lime"
+            onClick={() => router.push("/dashboard")}
+          >
+            GO_TO_DASHBOARD()
+          </AnimatedButton>
+          <AnimatedButton
+            color="orange"
+            onClick={handleRefresh}
+          >
+            REFRESH_DATA()
+          </AnimatedButton>
+        </div>
+      </div>
+    </div>
+  );
 
   if (pageLoading) {
     return (
@@ -713,10 +813,13 @@ export default function Analysis() {
       {/* Rotation Prompt for Mobile Devices */}
       <RotateDevicePrompt />
 
+      {/* Overlay for incomplete data */}
+      {!isLoading && !error && analysisData && !hasCompleteData() && <IncompleteDataOverlay />}
+
       <header className="mb-8 md:mb-16 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold font-mono text-lime">
-            IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span>
+            IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v2.0</span>
           </h1>
         </div>
         <div className="flex flex-col md:flex-row md:items-center gap-4">
@@ -773,8 +876,38 @@ export default function Analysis() {
 
         {!isLoading && !error && analysisData && (
           <div className="space-y-12">
-            {/* Summary Cards */}
+            {/* Summary Cards Grid - Both Course Total and Subject Summaries */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-16 mx-auto w-full">
+              {/* Course Total Summary Card */}
+              <div className="panel panel-primary p-4 md:p-6 relative">
+                <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">
+                  // COURSE_TOTAL_SUMMARY
+                </div>
+                <h3 className="text-base md:text-lg font-bold mb-4 md:mb-6 font-mono text-white">
+                  COURSE_TOTAL
+                </h3>
+                <div className="flex flex-col space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-mono text-gray-300">
+                      AVG_COURSE_TOTAL:
+                    </span>
+                    <span className="text-2xl font-bold font-mono">
+                      {calculateAverageCourseTotal().average}
+                    </span>
+                  </div>
+                  <div className="h-px w-full bg-gray-medium my-2"></div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-mono text-gray-300">
+                      Data Points:
+                    </span>
+                    <span className="text-xl font-bold font-mono">
+                      {calculateAverageCourseTotal().count}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Subject Summary Cards */}
               {Object.entries(calculateAverageMarksPerSubject()).map(
                 ([subject, averageMarks]) => {
                   const colorClass =
@@ -825,13 +958,13 @@ export default function Analysis() {
               )}
             </div>
 
-                        {/* Total Marks Graph */}
+            {/* Total Marks Graph */}
             <div className="panel panel-highlight p-6 relative">
               <div className="absolute -top-5 left-4 text-xs font-mono text-gray-500">
                 // Course total distribution
               </div>
               <h3 className="text-lg font-bold mb-6 font-mono text-lime">
-                COURSE_TOTAL_DiSTRIBUTION
+                COURSE_TOTAL_DISTRIBUTION
               </h3>
               <div className="h-80">
                 <Line
@@ -886,7 +1019,7 @@ export default function Analysis() {
                 // BRANCH_WISE_PERFORMANCE
               </div>
               <h3 className="text-lg font-bold mb-6 font-mono text-lime">
-                BRANCH_WISE_TOTAL_MARKS
+                BRANCH_WISE_COURSE_TOTAL
               </h3>
               <div className="h-80">
                 <Bar
@@ -909,10 +1042,10 @@ export default function Analysis() {
                       ...branchOptions.scales,
                       y: {
                         ...branchOptions.scales.y,
-                        max: 60,
+                        max: 100,
                         title: {
                           display: true,
-                          text: "Average Total Marks",
+                          text: "Average Course Total",
                           font: {
                             family: "JetBrains Mono",
                           },

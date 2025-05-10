@@ -11,7 +11,7 @@ export default function NotFound() {
         <div className="min-h-screen flex flex-col p-4 md:p-8">
             <header className="mb-8">
                 <h1 className="text-2xl md:text-3xl font-bold font-mono text-lime">
-                    IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v1.0</span>
+                    IHS_ANALYZER<span className="text-xs text-gray-500 ml-2">v2.0</span>
                 </h1>
             </header>
 

@@ -23,7 +23,7 @@ export default function Home() {
       ) : (
         <div className="flex flex-col min-h-screen p-4 md:p-8 relative">
           <div className="absolute top-4 md:top-8 left-4 md:left-8 text-xs text-gray-500 font-mono">
-            IHS_ANALYZER.v1.0
+            IHS_ANALYZER.v2.0
           </div>
 
           <main className="flex-grow flex flex-col items-center justify-center pt-12 md:pt-16">
